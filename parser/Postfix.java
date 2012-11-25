@@ -3,7 +3,7 @@ package parser;
 import java.util.Stack;
 
 public class Postfix {
-	public Postfix(String input){
+	public Postfix(){
 	}
 	public String infixToPostfix(String infix){
 		String outfix= "";

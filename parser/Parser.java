@@ -26,8 +26,17 @@ public class Parser {
 	private TheorumProver tp;
 	private String statement;
 	private Stack<Formula> formuli;
+	
+	public static void main(String[] args){
+		Parser parse=Parser.getParser();
+		parse.setStatement((new Postfix()).infixToPostfix("A>B"));
+		
+		parse.firstRun();
+		Formula finalStatement=parse.secondRun();
+	}
 	private Parser(){
 		tp = new TheorumProver();
+		formuli = new Stack<Formula>();
 	}
 	public static Parser getParser(){
 		if(parse==null){
@@ -47,6 +56,7 @@ public class Parser {
 					i++;
 				}
 				tp.addLiteral(currentLiteral);
+				currentLiteral="";
 			}
 		}
 	}
@@ -65,7 +75,7 @@ public class Parser {
 				int arity = oper.getArity();
 				Formula[] args = new Formula[arity];
 				for(int j=0; j<arity; j++){
-					args[j]=formuli.remove(formuli.capacity()-1);
+					args[j]=formuli.remove(formuli.size()-1);
 				}
 				Formula newForm = new Formula(oper, args);
 				this.formuli.add(newForm);
@@ -75,5 +85,8 @@ public class Parser {
 	}
 	public void setTheorumProver(TheorumProver tp){
 		this.tp=tp;
+	}
+	public void setStatement(String statement){
+		this.statement=statement;
 	}
 }

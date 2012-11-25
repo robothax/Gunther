@@ -1,5 +1,6 @@
 package parser;
 
+<<<<<<< HEAD
 import data_structures.*;
 /**
  * 
@@ -13,31 +14,66 @@ public class Parser {
 	public static final String DISJUNCTION_SYM = "\\/";
 	public static final String NEGATION_SYM = "~";
 	public static final String EQUIVALENCE_SYM = "<=>";
+=======
+import java.util.Stack;
+
+import data_structures.Formula;
+import data_structures.Operator;
+
+public class Parser {
 	
-	public static Sequent parse(String input) {
-		Sequent init = new Sequent();
-		
-		Formula[] literals = new Formula[26]; //dynamically create this later
-		
-		int len = input.length();
-		int i = 0;
-		
-		/* Pass 1: populate a list of active literals */
-		while(i < len) {
-			char buf = input.charAt(i);
-			if(Character.isLetter(buf)) {
-				if (literals[buf-'A'] != null) {
-					literals[buf-'A'] = new Formula(buf);
+	private static Parser parse;
+	private TheorumProver tp;
+	private String statement;
+	private Stack<Formula> formuli;
+	private Parser(){
+		tp = new TheorumProver();
+	}
+	public static Parser getParser(){
+		if(parse==null){
+			parse= new Parser();
+			return parse;
+		}
+		return parse;
+	}
+>>>>>>> finished parser, but requires testing, along with a few minor changes to other files
+	
+	public void firstRun(){
+		String currentLiteral="";
+		for(int i=0; i<statement.length(); i++){
+			if(!Postfix.checkIfOperand(String.valueOf(statement.charAt(i)))){
+				while(statement.charAt(i)!=':'){
+					currentLiteral+=statement.charAt(i);
+					i++;
 				}
+				tp.addLiteral(currentLiteral);
 			}
 		}
-		
-		i = 0;
-		/* Pass 2: generate the initial formula structure */
-		while(i < len) {
-			
+	}
+	public Formula secondRun(){
+		for(int i=0; i<statement.length(); i++){
+			if(!Postfix.checkIfOperand(String.valueOf(statement.charAt(i)))){
+				String currentLiteral = "";
+				while(statement.charAt(i)!=':'){
+					currentLiteral+=statement.charAt(i);
+					i++;
+				}
+				formuli.add(tp.getLiteral(currentLiteral));
+			}
+			else{
+				Operator oper= tp.getOperator(statement.charAt(i));
+				int arity = oper.getArity();
+				Formula[] args = new Formula[arity];
+				for(int j=0; j<arity; j++){
+					args[j]=formuli.remove(formuli.capacity()-1);
+				}
+				Formula newForm = new Formula(oper, args);
+				this.formuli.add(newForm);
+			}
 		}
-		
-		return init;
+		return this.formuli.pop();
+	}
+	public void setTheorumProver(TheorumProver tp){
+		this.tp=tp;
 	}
 }

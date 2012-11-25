@@ -3,16 +3,14 @@ package parser;
 import java.util.Stack;
 
 public class Postfix {
-	private String postfixNotation;
 	public Postfix(String input){
-		this.postfixNotation= infixToPostfix(input);
 	}
 	public String infixToPostfix(String infix){
 		String outfix= "";
 		Stack<String> stack = new Stack<String>();
 		for(int i=0; i<infix.length(); i++){
 			if(!checkIfOperand(String.valueOf(infix.charAt(i)))){
-				outfix+=infix.charAt(i);
+				outfix+=(infix.charAt(i)+":");
 			}
 			else{
 				if(stack.isEmpty()) stack.add(String.valueOf(infix.charAt(i)));
@@ -50,14 +48,17 @@ public class Postfix {
 		return token;
 	}
 	public static boolean checkIfOperand(String oper){
-		if(oper.equals("v") || oper.equals("^") || oper.equals(">") || oper.equals("(") || oper.equals(")")) return true;
+		if(oper.equals("v") || oper.equals("^") || oper.equals(">") || oper.equals("(") || oper.equals(")")
+				|| oper.equals("=") || oper.equals("~")) return true;
 		return false;
 	}
 	
 	public static int getPrecedent(String operator){
-		if(operator.equals(">")) return 2;
-		else if(operator.equals("^"))return 0;
-		else if(operator.equals("v"))return 1;
-		return 3;
+		if(operator.equals("=")) return 4;
+		else if(operator.equals(">")) return 3;
+		else if(operator.equals("v"))return 2;
+		else if(operator.equals("^"))return 1;
+		else if(operator.equals("~"))return 0;
+		return 5;
 	}
 }

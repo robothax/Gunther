@@ -9,7 +9,7 @@ public class Formula {
 	
 	private boolean atomic;
 	
-	private char literal;
+	private String literal;
 	
 	private Operator function;
 	private Formula arguments[];
@@ -29,12 +29,17 @@ public class Formula {
 			arguments[i] = args[i];
 		}
 	}
-	
+	public Formula(Operator func, Formula args[], char fake){
+		atomic = false;
+		
+		function = func;
+		arguments = args;
+	}
 	/**
 	 * Constructor for atomic formula.
 	 * @param lit
 	 */
-	public Formula(char lit) {
+	public Formula(String lit) {
 		atomic = true;
 		
 		function = null;
@@ -48,6 +53,17 @@ public class Formula {
 	
 	public boolean isAtomic() {		return atomic;		}
 	
+<<<<<<< HEAD
+=======
+	public boolean isAtomic() {
+		return atomic;
+	}
+	public String getName() {
+		if (atomic)
+			return literal;
+		return null;
+	}
+>>>>>>> finished parser, but requires testing, along with a few minor changes to other files
 	
 	public String toString() {
 		String formString = null;

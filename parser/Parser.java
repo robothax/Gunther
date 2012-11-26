@@ -4,11 +4,11 @@ import data_structures.*;
 
 public class Parser {
 	
-	public static final String IMPLICATION_SYMBOL = "=>";
-	public static final String CONJUNCTION_SYMBOL = "/\\";
-	public static final String DISJUNCTION_SYMBOL = "\\/";
-	public static final String NEGATION_SYMBOL = "~";
-	public static final String EQUIVALENCE_SYMBOL = "<=>";
+	public static final String IMPLICATION_SYM = "=>";
+	public static final String CONJUNCTION_SYM = "/\\";
+	public static final String DISJUNCTION_SYM = "\\/";
+	public static final String NEGATION_SYM = "~";
+	public static final String EQUIVALENCE_SYM = "<=>";
 	
 	public static Sequent parse(String input) {
 		Sequent init = new Sequent();

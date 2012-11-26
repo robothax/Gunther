@@ -38,27 +38,29 @@ public class Formula {
 		literal = lit;
 	}
 	
-	public Operator getOperator() {
-		if (atomic)
-			return function;
-		else
-			return null;
-	}
-	public Formula[] getArguments() {
-		if (atomic) 
-			return arguments;
-		else
-			return null;
-	}
+	public Operator getOperator() {		return function;	}
+	public Formula[] getArguments() {	return arguments;	}
+	
+	public boolean isAtomic() {		return atomic;		}
 	
 	
-	public boolean isAtomic() {
-		return atomic;
+	public String toString() {
+		String formString = null;
+		if (atomic) {
+			formString += literal;		//if the formula is atomic just give the literal
+		}
+		else {
+			if (function.getArity() == 1) {	//if  the formula is composed of only one subformula then prefix the subformula with the operator
+				formString += function.toString() + arguments[0].toString();
+			}
+			else {				//if the formula is composed of numerous subformulas then put the operator between each subformula and bookend with parentheses
+				formString += "(" + arguments[0].toString();
+				for (int i = 1; i < function.getArity(); i++) {
+					formString += function.toString() + arguments[i].toString();
+				}
+				formString += ")";
+			}
+		}
+		return formString;
 	}
-	public char getName() {
-		if (atomic)
-			return literal;
-		return 0;
-	}
-	
 }

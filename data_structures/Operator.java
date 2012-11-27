@@ -1,5 +1,9 @@
 package data_structures;
-
+/**
+ * 
+ * @author Jeffrey Kabot
+ *
+ */
 public class Operator {
 	private OperatorType type;
 	private int arity;
@@ -21,22 +25,23 @@ public class Operator {
 	public static final String NEGATION_SYM = "~";
 	public static final String EQUIVALENCE_SYM = "<=>";
 	
-	public int getArity() {
-		return arity;
-	}
+	public int getArity() {		return arity;	}
+	public OperatorType getType() {	return type;	}
 	
 	public String toString() {
-		if (this.equals(NEGATION))
-			return NEGATION_SYM;
-		else if (this.equals(IMPLICATION))
-			return IMPLICATION_SYM;
-		else if (this.equals(CONJUNCTION))
-			return CONJUNCTION_SYM;
-		else if (this.equals(DISJUNCTION))
-			return DISJUNCTION_SYM;
-		else if (this.equals(EQUIVALENCE))
-			return EQUIVALENCE_SYM;
-		else
-			return null;
+		switch(type) {
+			case NEGATION:
+				return NEGATION_SYM;
+			case IMPLICATION:
+				return IMPLICATION_SYM;
+			case CONJUNCTION:
+				return CONJUNCTION_SYM;
+			case DISJUNCTION:
+				return DISJUNCTION_SYM;
+			case EQUIVALENCE:
+				return EQUIVALENCE_SYM;
+			default:
+				return null;
+		}
 	}
 }

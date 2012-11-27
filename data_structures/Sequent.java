@@ -1,7 +1,12 @@
 package data_structures;
 
+import java.util.Iterator;
 import java.util.LinkedList;
-
+/**
+ * 
+ * @author Jeffrey Kabot
+ *
+ */
 public class Sequent {
 	 
 	private LinkedList<Formula> Hypotheses;
@@ -19,6 +24,24 @@ public class Sequent {
 	
 	public LinkedList<Formula> getHypotheses() {	return Hypotheses;	}
 	public LinkedList<Formula> getConclusions() {	return Conclusions;	}
+	
+	/**
+	 * Determines if the sequent is an axiom.
+	 * A sequent is an axiom if the same literal is in both the hypotheses and the conclusions.
+	 * @return
+	 */
+	//@TARGET FOR OPTIMIZATION
+	public boolean isAxiom() {
+		Object[] hypo = Hypotheses.toArray();
+		Object[] conc = Conclusions.toArray();
+		for (Object f1: hypo) {
+			for (Object f2: conc) {
+				if (f1.equals(f2))
+					return true;
+			}
+		}
+		return false;
+	}
 	
 	/**
 	 * Determines if the list of hypotheses is all atomic
@@ -56,6 +79,27 @@ public class Sequent {
 			}
 		}
 		return true;
+	}
+	
+	public String toString() {
+		String seq = "";
+		
+		Iterator<Formula> hit = Hypotheses.descendingIterator();
+		while(hit.hasNext()) {
+			seq += hit.next().toString();
+			if (hit.hasNext())
+				seq += ", ";
+		}
+		seq += " |- ";
+		
+		Iterator<Formula> cit = Conclusions.iterator();
+		while(cit.hasNext()) {
+			seq += cit.next().toString();
+			if (cit.hasNext())
+				seq += ", ";
+		}
+		
+		return seq;
 	}
 	
 }

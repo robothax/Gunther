@@ -1,7 +1,11 @@
 package parser;
 
 import data_structures.*;
-
+/**
+ * 
+ * @author Jeffrey Kabot
+ *
+ */
 public class Parser {
 	
 	public static final String IMPLICATION_SYM = "=>";

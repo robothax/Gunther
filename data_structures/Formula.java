@@ -1,5 +1,10 @@
 package data_structures;
 
+/**
+ * 
+ * @author Jeffrey Kabot
+ *
+ */
 public class Formula {
 	
 	private boolean atomic;

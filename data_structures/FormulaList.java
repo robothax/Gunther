@@ -9,6 +9,10 @@ import java.util.LinkedList;
  */
 public class FormulaList extends LinkedList<Formula> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Formula> atoms;
 	
 	public FormulaList() {

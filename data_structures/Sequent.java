@@ -1,7 +1,6 @@
 package data_structures;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 /**
  * 
  * @author Jeffrey Kabot, Aaron Meltzer

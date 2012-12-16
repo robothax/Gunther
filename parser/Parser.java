@@ -25,7 +25,7 @@ public class Parser {
 		return parse;
 	}
 	
-	public  Sequent parse(String statement){
+	public static Sequent parse(String statement){
 		
 		formuli = new Stack<Formula>();
 		
@@ -46,7 +46,7 @@ public class Parser {
 		init.add(secondRun(statement, tp));
 		return new Sequent(new FormulaList(), init);
 	}
-	private Formula secondRun(String statement, Atomizer tp){
+	private static Formula secondRun(String statement, Atomizer tp){
 		for(int i=0; i<statement.length(); i++){
 			if(!Postfix.checkIfOperand(String.valueOf(statement.charAt(i)))){
 				String currentLiteral = "";

@@ -8,8 +8,8 @@ package data_structures;
  */
 public class AtomicFormula extends Formula {
 	
-	private char descriptor;
-	private char[] terms;
+	private String literal;
+	private String[] terms;
 	
 	private boolean firstOrder;
 	
@@ -18,17 +18,17 @@ public class AtomicFormula extends Formula {
 	 * @param lit Capital letter representative of the formula.
 	 * @param t List of terms, can be empty.  If non-empty then the formula is first-order.
 	 */
-	public AtomicFormula(char lit, char... t) {
+	public AtomicFormula(String lit, String[] t) {
 		if (t.length == 0) {
 			firstOrder = false;
 			terms = null;
 		}
 		else {
 			firstOrder =  true;
-			terms = new char[t.length];
+			terms = new String[t.length];
 		}
 		
-		descriptor = lit;
+		literal = lit;
 		
 		for (int i = 0; i < t.length; i++) {
 			terms[i] = t[i];
@@ -36,15 +36,15 @@ public class AtomicFormula extends Formula {
 	}
 	
 	public boolean isFirstOrder()	{	return firstOrder; 	}
-	public char[] getTerms() {	return terms;	}
+	public String[] getTerms() {	return terms;	}
 	
 	public String toString() {
 		String formString = null;
 		if (!firstOrder) {
-			formString += descriptor;
+			formString += literal;
 		}
 		else {
-			formString += descriptor;
+			formString += literal;
 			formString += "(";
 			for (int i = 0; i < terms.length; i++) {
 				formString += terms[i];

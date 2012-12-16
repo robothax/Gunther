@@ -3,6 +3,8 @@ package parser;
 import java.util.Stack;
 
 import data_structures.CompoundFormula;
+import data_structures.FirstOrderFormula;
+import data_structures.Formula;
 import data_structures.Operator;
 
 public class Parser {
@@ -10,11 +12,11 @@ public class Parser {
 	private static Parser parse;
 	private TheorumProver tp;
 	private String statement;
-	private Stack<Object> formuli;
+	private Stack<Formula> formuli;
 	
 	private Parser(){
 		tp = new TheorumProver();
-		formuli = new Stack<Object>();
+		formuli = new Stack<Formula>();
 	}
 	public static Parser getParser(){
 		if(parse==null){
@@ -32,7 +34,7 @@ public class Parser {
 					currentLiteral+=statement.charAt(i);
 					i++;
 				}
-				tp.addLiteral(currentLiteral);
+				tp.addAtomic(currentLiteral);
 				currentLiteral="";
 			}
 		}
@@ -45,16 +47,23 @@ public class Parser {
 					currentLiteral+=statement.charAt(i);
 					i++;
 				}
-				formuli.add(tp.getLiteral(currentLiteral));
+				formuli.add(tp.getAtomic(currentLiteral));
 			}
 			else{
 				Operator oper= tp.getOperator(statement.charAt(i));
 				int arity = oper.getArity();
-				Object[] args = new Object[arity];
+				Formula[] args = new Formula[arity];
 				for(int j=0; j<arity; j++){
 					args[j]=formuli.remove(formuli.size()-1);
 				}
-				CompoundFormula newForm = new CompoundFormula(oper, args);
+				Formula newForm=null;
+				if(oper.equals(Operator.UNIVERSAL) || oper.equals(Operator.EXISTENTIAL)){
+					
+					newForm = new FirstOrderFormula(args[0],oper, tp.getTerms(statement) );
+				}
+				else{
+					newForm = new CompoundFormula(oper, (Formula[])args);
+				}
 				this.formuli.add(newForm);
 			}
 		}

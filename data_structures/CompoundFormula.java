@@ -15,13 +15,14 @@ public class CompoundFormula extends Formula {
 	 * @param o The logical connective acting upon the sequence of subformula
 	 * @param args Sequence of subformla
 	 */
-	public CompoundFormula(Operator o, Formula... args) {
+	public CompoundFormula(Operator o, Formula[] args) {
 		op = o;
-		arguments = new Formula[o.getArity()];
+		arguments = args;
+		//arguments = new Formula[o.getArity()];
 		
-		for(int i = 0; i < o.getArity(); i++) {
-			arguments[i] = args[i];
-		}
+		//for(int i = 0; i < o.getArity(); i++) {
+		//	arguments[i] = args[i];
+	//	}
 	}
 	
 	public Operator getOperator() 	{	return op;		}

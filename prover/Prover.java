@@ -11,7 +11,7 @@ import prover.ThreadMonitor;
  *
  */
 public class Prover implements Runnable {
-
+	
 	private static Vector<Thread> branches;
 	private static ProofTree record;
 	private static volatile boolean stop;
@@ -19,16 +19,16 @@ public class Prover implements Runnable {
 	private ProofNode currentNode;
 	private static ThreadMonitor tm;
 	private int doneYetIndex=0;
-
+	
 	//private static final Boolean FALSE = new Boolean(false);
-
+	
 	/**
 	 * Retrieves the record containing all the proof states propagated by the prover.
 	 * @return
 	 * The proof state characterizing the proof.
 	 */
 	public ProofTree getProof() {	return record;	}
-
+	
 	/**
 	 * The method used to initiate a proof.
 	 * This is the only entry for a proof since the prover constructor is private.
@@ -43,7 +43,7 @@ public class Prover implements Runnable {
 		tm = new ThreadMonitor();
 
 	}
-
+	
 	/**
 	 * The constructor for an autonomous prover element.
 	 * The prover runs in its own thread, seeking to decompose a target sequent, unique to each prover.
@@ -56,7 +56,7 @@ public class Prover implements Runnable {
 	private Prover(Sequent branch, ProofNode initNode) {
 		localBranch = branch;
 		currentNode = initNode;
-
+		
 		Thread t = new Thread(this, "Sequent " + branch);
 		tm.addThread(new Boolean(false));
 		doneYetIndex=tm.getDoneYet().size();
@@ -71,9 +71,9 @@ public class Prover implements Runnable {
 	 */
 	public void run() {
 		//use another thread to periodically check if we have any thread still running?
-
+		
 		Thread t = Thread.currentThread();
-
+		
 		//if the thread returned true then it either reached axioms or branched into new sequent threads, so remove the thread from the vector
 		if (Prove(localBranch, currentNode)) {
 			branches.remove(t);
@@ -83,7 +83,7 @@ public class Prover implements Runnable {
 			//t.setPriority(Thread.MAX_PRIORITY);
 			stop = true;
 			/*branches.remove(t);
-
+			
 			//iterator structure in case we need to do something to each thread
 			Iterator<Thread> it = branches.iterator();
 			while(it.hasNext()) {
@@ -97,7 +97,7 @@ public class Prover implements Runnable {
 		record.printProof(record.getRoot());
 
 	}
-
+	
 	/**
 	 * This method decomposes a sequent recursively by the principal operator of one of the formula in the list of the hypotheses and conclusions.
 	 * Exactly which formula it targets first is up for optimization.
@@ -117,9 +117,9 @@ public class Prover implements Runnable {
 		if (stop) {
 			return true;
 		}
-
+		
 		//add this sequent to the proof tree
-
+		
 		if (branch.isAxiom()) {	//branch success
 			return true;
 		}
@@ -129,104 +129,63 @@ public class Prover implements Runnable {
 		else {	//then keep breaking down the branch
 			OperatorType o;
 			//pick hypotheses or conclusions
-			//conclusions first, most calls to prove will have all/more elements in the conclusions
+			//conclusions, most calls to prove will have all/more elements in the conclusions
 			if (!branch.isRightAtomic()) {	
-				
-				Formula f = branch.getConclusions().removeFirst();
-				
-				//is the first formula a compound formula? (i.e., not first order)
-				if (f instanceof CompoundFormula) {
-					CompoundFormula cf = (CompoundFormula) f;
-					o = cf.getOperator().getType();
-					
-					switch (o) {
+				CompoundFormula current = (CompoundFormula) branch.getConclusions().getFirst();
+				o = current.getOperator().getType();
+				switch (o) {
 					case NEGATION:
-						rightNegation(branch, cf);
+						rightNegation(branch);
 						Prove(branch, new ProofNode(branch, pNode));
 						break;
 					case CONJUNCTION:
-						rightConjunction(branch, cf, pNode);
+						rightConjunction(branch, pNode);
 						//thread branches into two new threads, original thread returns
 						return true;
 						//break;
 					case DISJUNCTION:
-						rightDisjunction(branch, cf);
+						rightDisjunction(branch);
 						Prove(branch, new ProofNode(branch, pNode));
 						break;
 					case IMPLICATION:
-						rightImplication(branch, cf);
+						rightImplication(branch);
 						Prove(branch, new ProofNode(branch, pNode));
 						break;
 					case EQUIVALENCE:
-						rightEquivalence(branch, cf, pNode);
+						rightEquivalence(branch, pNode);
 						//thread branches into two new threads, original thread returns
 						return true;
 						//break;
-					}
-				}
-				//otherwise it must be first order, as we cannot retrieve atoms from the list
-				else {
-					FirstOrderFormula fof = (FirstOrderFormula) f;
-					o = fof.getQuantifier().getType();
-					
-					switch (o) {
-					case EXISTENTIAL:
-						//TODO
-						break;
-					case UNIVERSAL:
-						//TODO
-						break;
-					}
 				}
 			}
 			//hypotheses
 			else if (!branch.isLeftAtomic()) {
-				
-				Formula f = branch.getHypotheses().removeFirst();
-				
-				if (f instanceof CompoundFormula) {
-					CompoundFormula cf = (CompoundFormula) f;
-					o = cf.getOperator().getType();
-					
-					switch (o) {
+				CompoundFormula current =  (CompoundFormula)branch.getHypotheses().getFirst();
+				o = current.getOperator().getType();
+				switch (o) {
 					case NEGATION:
-						leftNegation(branch, cf);
+						leftNegation(branch);
 						Prove(branch, new ProofNode(branch, pNode));
 						break;
 					case CONJUNCTION:
-						leftConjunction(branch, cf);
+						leftConjunction(branch);
 						Prove(branch, new ProofNode(branch, pNode));
 						break;
 					case DISJUNCTION:
-						leftDisjunction(branch, cf, pNode);
+						leftDisjunction(branch, pNode);
 						//thread branches into two new threads, original thread returns
 						return true;
 						//break;
 					case IMPLICATION:
-						leftImplication(branch, cf, pNode);
+						leftImplication(branch, pNode);
 						//thread branches into two new threads, original thread returns
 						return true;
 						//break;
 					case EQUIVALENCE:
-						leftEquivalence(branch, cf, pNode);
+						leftEquivalence(branch, pNode);
 						//thread branches into two new threads, original thread returns
 						return true;
 						//break;
-					}
-				}
-				//otherwise f must be a first order formula (as we cannot retrieve atoms from the list normally
-				else {
-					FirstOrderFormula fof = (FirstOrderFormula)f;
-					o = fof.getQuantifier().getType();
-					
-					switch(o) {
-					case EXISTENTIAL:
-						//TODO
-						break;
-					case UNIVERSAL:
-						//TODO
-						break;
-					}
 				}
 			}
 			else {}
@@ -234,116 +193,137 @@ public class Prover implements Runnable {
 		//we don't get here
 		return false;
 	}
-
-	private void leftNegation(Sequent branch, CompoundFormula cf) {
+	
+	private void leftNegation(Sequent branch) {
+		FormulaList left = branch.getHypotheses();
 		FormulaList right = branch.getConclusions();
-
-		Formula f = cf.getArguments()[0]; //refactor f, remove the negation
-
+		
+		CompoundFormula f = (CompoundFormula)left.removeFirst();
+		
+		f = (CompoundFormula)f.getArguments()[0]; //refactor f, remove the negation
+		 
 		right.addFirst(f);	
 	}
-
-	private void rightNegation(Sequent branch, CompoundFormula cf) {
-		FormulaList left = branch.getHypotheses();
+	
+	private void rightNegation(Sequent branch) {
+		LinkedList<Formula> left = branch.getHypotheses();
+		LinkedList<Formula> right = branch.getConclusions();
 		
-		Formula f = cf.getArguments()[0]; //refactor f by removing the negation
-
-		left.addFirst(f);
+		CompoundFormula f = (CompoundFormula)right.removeFirst();
+		//I added f2 since we don't know if the first argument will be a Literal or Compound Formula
+		Formula f2 = f.getArguments()[0]; //refactor f by removing the negation
+		
+		left.addFirst(f2);
 	}
-
-	private void leftConjunction(Sequent branch, CompoundFormula cf) {
-		FormulaList left = branch.getHypotheses();
-
-		Formula f_sub1 = cf.getArguments()[0];
-		Formula f_sub2 = cf.getArguments()[1];
-
+	
+	private void leftConjunction(Sequent branch) {
+		LinkedList<Formula> left = branch.getHypotheses();
+		//LinkedList<Formula> right = branch.getConclusions();
+		
+		CompoundFormula f = (CompoundFormula)left.removeFirst();
+		Formula f_sub1 = f.getArguments()[0];
+		Formula f_sub2 = f.getArguments()[1];
+		
 		left.addFirst(f_sub1);
 		left.addFirst(f_sub2);
 	}
-
-	private void rightConjunction(Sequent branch, CompoundFormula cf, ProofNode pNode) {
+	
+	private void rightConjunction(Sequent branch, ProofNode pNode) {
 		FormulaList left = branch.getHypotheses();
 		FormulaList right = branch.getConclusions();
-
-		Formula f_sub1 = cf.getArguments()[0];
-		Formula f_sub2 = cf.getArguments()[1];
+		
+		CompoundFormula f = (CompoundFormula)right.removeFirst();
+		
+		Formula f_sub1 = f.getArguments()[0];
+		Formula f_sub2 = f.getArguments()[1];
 
 		Sequent branch1 = new Sequent(left, right);
 		branch1.getConclusions().addFirst(f_sub1);
-
+		
 		Sequent branch2 = new Sequent(left, right);
 		branch2.getConclusions().addFirst(f_sub2);
-
+		
 		new Prover(branch1, new ProofNode(branch1, pNode));
 		new Prover(branch2, new ProofNode(branch2, pNode));
 	}
-
-	private void leftDisjunction(Sequent branch, CompoundFormula cf, ProofNode pNode) {
+	
+	private void leftDisjunction(Sequent branch, ProofNode pNode) {
 		FormulaList left = branch.getHypotheses();
 		FormulaList right = branch.getConclusions();
-
-		Formula f_sub1 = cf.getArguments()[0];
-		Formula f_sub2 = cf.getArguments()[1];
-
+		
+		CompoundFormula f = (CompoundFormula)left.removeFirst();
+		
+		Formula f_sub1 = f.getArguments()[0];
+		Formula f_sub2 = f.getArguments()[1];
+		
 		Sequent branch1 = new Sequent(left, right);
 		branch1.getHypotheses().addFirst(f_sub1);
-
+		
 		Sequent branch2 = new Sequent(left, right);
 		branch2.getHypotheses().addFirst(f_sub2);
-
+		
 		new Prover(branch1, new ProofNode(branch1, pNode));
 		new Prover(branch2, new ProofNode(branch2, pNode));
 	}
-
-	private void rightDisjunction(Sequent branch, CompoundFormula cf) {
+	
+	private void rightDisjunction(Sequent branch) {
+		//FormulaList left = branch.getHypotheses();
 		FormulaList right = branch.getConclusions();
-
-		Formula f_sub1 = cf.getArguments()[0];
-		Formula f_sub2 = cf.getArguments()[1];
-
+		
+		CompoundFormula f = (CompoundFormula)right.removeFirst();
+		
+		Formula f_sub1 = f.getArguments()[0];
+		Formula f_sub2 = f.getArguments()[1];
+		
 		right.addFirst(f_sub2);
 		right.addFirst(f_sub1);
 	}
-
-	private void leftImplication(Sequent branch, CompoundFormula cf, ProofNode pNode) {
+	
+	private void leftImplication(Sequent branch, ProofNode pNode) {
 		FormulaList left = branch.getHypotheses();
 		FormulaList right = branch.getConclusions();
-
-		Formula f_sub1 = cf.getArguments()[0];
-		Formula f_sub2 = cf.getArguments()[1];
+		
+		CompoundFormula f = (CompoundFormula)left.removeFirst();
+		
+		Formula f_sub1 = f.getArguments()[0];
+		Formula f_sub2 = f.getArguments()[1];
 
 		Sequent branch1 = new Sequent(left, right);
 		branch1.getConclusions().addFirst(f_sub1);
-
+		
 		Sequent branch2 = new Sequent(left, right);
 		branch2.getHypotheses().addFirst(f_sub2);
 
 		new Prover(branch1, new ProofNode(branch1, pNode));
 		new Prover(branch2, new ProofNode(branch2, pNode));
 	}
-
-	private void rightImplication(Sequent branch, CompoundFormula cf) {
+	
+	private void rightImplication(Sequent branch) {
 		FormulaList left = branch.getHypotheses();
 		FormulaList right = branch.getConclusions();
-
-		Formula f_sub1 = cf.getArguments()[0];
-		Formula f_sub2 = cf.getArguments()[1];
-
+		
+		CompoundFormula f = (CompoundFormula)right.removeFirst();
+		
+		Formula f_sub1 = f.getArguments()[0];
+		Formula f_sub2 = f.getArguments()[1];
+		
 		left.addFirst(f_sub1);
 		right.addFirst(f_sub2);
 	}
-
-	private void leftEquivalence(Sequent branch, CompoundFormula cf, ProofNode pNode) {
+	
+	private void leftEquivalence(Sequent branch, ProofNode pNode) {
 		FormulaList left = branch.getHypotheses();
 		FormulaList right = branch.getConclusions();
-
-		Formula f_sub1 = cf.getArguments()[0];
-		Formula f_sub2 = cf.getArguments()[1];
+		
+		CompoundFormula f = (CompoundFormula)left.removeFirst();
+		
+		Formula f_sub1 = f.getArguments()[0];
+		Formula f_sub2 = f.getArguments()[1];
 
 		Sequent branch1 = new Sequent(left, right);
 		branch1.getHypotheses().addFirst(f_sub1);
 		branch1.getHypotheses().addFirst(f_sub2);
-
+		
 		Sequent branch2 = new Sequent(left, right);
 		branch2.getConclusions().addFirst(f_sub2);
 		branch2.getConclusions().addFirst(f_sub1);
@@ -351,18 +331,20 @@ public class Prover implements Runnable {
 		new Prover(branch1, new ProofNode(branch1, pNode));
 		new Prover(branch2, new ProofNode(branch2, pNode));
 	}
-
-	private void rightEquivalence(Sequent branch, CompoundFormula cf, ProofNode pNode) {
+	
+	private void rightEquivalence(Sequent branch, ProofNode pNode) {
 		FormulaList left = branch.getHypotheses();
 		FormulaList right = branch.getConclusions();
-
-		Formula f_sub1 = cf.getArguments()[0];
-		Formula f_sub2 = cf.getArguments()[1];
+		
+		CompoundFormula f = (CompoundFormula)right.removeFirst();
+		
+		Formula f_sub1 = f.getArguments()[0];
+		Formula f_sub2 = f.getArguments()[1];
 
 		Sequent branch1 = new Sequent(left, right);
 		branch1.getHypotheses().addFirst(f_sub1);
 		branch1.getConclusions().addFirst(f_sub2);
-
+		
 		Sequent branch2 = new Sequent(left, right);
 		branch2.getHypotheses().addFirst(f_sub2);
 		branch2.getConclusions().addFirst(f_sub1);

@@ -1,16 +1,18 @@
 package parser;
 
 import java.util.HashMap;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-import data_structures.LiteralFormula;
+import data_structures.AtomicFormula;
 import data_structures.Operator;
 
 public class TheorumProver {
 	
-	private HashMap<Double, LiteralFormula>literals;
+	private HashMap<Double, AtomicFormula>Atomics;
 	private HashMap<Character, Operator>operators;
 	public TheorumProver(){
-		literals =new HashMap<Double, LiteralFormula>();
+		Atomics =new HashMap<Double, AtomicFormula>();
 		operators = new HashMap<Character, Operator>();
 		operators.put('=', Operator.EQUIVALENCE);
 		operators.put('>', Operator.IMPLICATION);
@@ -21,25 +23,47 @@ public class TheorumProver {
 	public static void main(String[] args){
 		
 	}
-	public HashMap<Double, LiteralFormula> getLiterals() {
-		return literals;
+	public HashMap<Double, AtomicFormula> getAtomics() {
+		return Atomics;
 	}
-	public void setLiterals(HashMap<Double, LiteralFormula> literals) {
-		this.literals = literals;
+	public void setAtomics(HashMap<Double, AtomicFormula> Atomics) {
+		this.Atomics = Atomics;
 	}
-	public void addLiteral(String literal){
-		LiteralFormula toAdd= new LiteralFormula(literal);
+	public void addAtomic(String Atomic){
+		AtomicFormula toAdd= new AtomicFormula(Atomic, getTerms(Atomic));
 		double uniqueNumber = 0;
-		for(int i=0; i<literal.length(); i++) uniqueNumber+= literal.charAt(i);
-		literals.put(uniqueNumber, toAdd);
+		for(int i=0; i<Atomic.length(); i++) uniqueNumber+= Atomic.charAt(i);
+		Atomics.put(uniqueNumber, toAdd);
 	}
-	public LiteralFormula getLiteral(String literal){
+	public AtomicFormula getAtomic(String Atomic){
 		double uniqueNumber=0;
-		for(int i=0; i<literal.length(); i++) uniqueNumber+= literal.charAt(i);
-		LiteralFormula toReturn = literals.get(uniqueNumber);
+		for(int i=0; i<Atomic.length(); i++) uniqueNumber+= Atomic.charAt(i);
+		AtomicFormula toReturn = Atomics.get(uniqueNumber);
 		return toReturn;
 	}
 	public Operator getOperator(char op){
 		return operators.get(op);
+	}
+	public String[] getTerms(String Atomic){
+		Vector<String> vs = new Vector<String>();
+		String newString="";;
+		for(int i=0; i<Atomic.length(); i++){
+			if(Atomic.charAt(i)=='('){
+				i++;
+				if(i>=Atomic.length()){
+					throw new IllegalArgumentException("An open paren must end with a closed paren.");
+				}
+				while(Atomic.charAt(i)!=')'){
+					if(i+1> Atomic.length()){
+						throw new IllegalArgumentException("An open paren must end with a closed paren.");
+					}
+					newString+=Atomic.charAt(i);
+					i++;
+				}
+			}
+		}
+		StringTokenizer st = new StringTokenizer(newString, ",");
+		while(st.hasMoreElements()) vs.add(st.nextToken());
+		return (String[])vs.toArray();
 	}
 }

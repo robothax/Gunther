@@ -1,38 +1,46 @@
 package data_structures;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 /**
  * 
- * @author Jeffrey Kabot
+ * @author Jeffrey Kabot, Aaron Meltzer
  *
  */
 public class Sequent {
 	 
-	private LinkedList<Formula> Hypotheses;
-	private LinkedList<Formula> Conclusions;
+	private FormulaList Hypotheses;
+	private FormulaList Conclusions;
 	
 	public Sequent() {
-		Hypotheses = new LinkedList<Formula>();
-		Conclusions = new LinkedList<Formula>();
+		Hypotheses = new FormulaList();
+		Conclusions = new FormulaList();
 	}
 	
-	public Sequent(LinkedList<Formula> hypo, LinkedList<Formula> conc) {
+	public Sequent(FormulaList hypo, FormulaList conc) {
 		Hypotheses = hypo;
 		Conclusions = conc;
 	}
 	
-	public LinkedList<Formula> getHypotheses() {	return Hypotheses;	}
-	public LinkedList<Formula> getConclusions() {	return Conclusions;	}
+	public FormulaList getHypotheses() {	return Hypotheses;	}
+	public FormulaList getConclusions() {	return Conclusions;	}
 	
 	/**
 	 * Determines if the sequent is an axiom.
 	 * A sequent is an axiom if the same atomic formula is in both the hypotheses and the conclusions.
 	 * @return Returns true if a sequent represents an axiom, false if otherwise.
 	 */
-	//@TARGET FOR OPTIMIZATION
 	public boolean isAxiom() {
-		//TODO
+		ArrayList<Formula> leftAtom = Hypotheses.getAtoms();
+		ArrayList<Formula> rightAtom = Conclusions.getAtoms();
+		
+		for (int i = 0; i < leftAtom.size(); i++) {
+			for (int j = 0; j < rightAtom.size(); j++) {
+				if (leftAtom.get(i).equals(rightAtom.get(j))) {
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 	
@@ -45,14 +53,7 @@ public class Sequent {
 	 * True if otherwise.
 	 */
 	public boolean isLeftAtomic() {
-		for (int i = 0; i < Hypotheses.size(); i++) {
-			if (!(Hypotheses.get(i) instanceof AtomicFormula)) {
-				Formula f = Hypotheses.remove(i);
-				Hypotheses.addFirst(f);
-				return false;
-			}
-		}
-		return true;
+		return Hypotheses.isAtomic();
 	}
 	
 	/**
@@ -64,31 +65,24 @@ public class Sequent {
 	 * True if otherwise.
 	 */
 	public boolean isRightAtomic() {
-		for (int i = 0; i < Conclusions.size(); i++) {
-			if (!(Conclusions.get(i) instanceof AtomicFormula)) {
-				Formula f = Conclusions.remove(i);
-				Conclusions.addFirst(f);
-				return false;
-			}
-		}
-		return true;
+		return Conclusions.isAtomic();
 	}
 	
 	public String toString() {
 		String seq = "";
 		
-		Iterator<Formula> hit = Hypotheses.descendingIterator();
-		while(hit.hasNext()) {
-			seq += hit.next().toString();
-			if (hit.hasNext())
+		Formula[] hypo = Hypotheses.toArray();
+		for (int i = hypo.length-1; i >= 0; i--) {
+			seq += hypo[i].toString();
+			if (i-1 >= 0)
 				seq += ", ";
 		}
 		seq += " |- ";
 		
-		Iterator<Formula> cit = Conclusions.iterator();
-		while(cit.hasNext()) {
-			seq += cit.next().toString();
-			if (cit.hasNext())
+		Formula[] conc = Conclusions.toArray();
+		for (int i = conc.length-1; i >= 0; i--) {
+			seq += conc[i].toString();
+			if (i-1 >= 0)
 				seq += ", ";
 		}
 		

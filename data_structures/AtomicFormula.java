@@ -8,7 +8,7 @@ package data_structures;
  */
 public class AtomicFormula extends Formula {
 	
-	private char literal;
+	private char descriptor;
 	private char[] terms;
 	
 	private boolean firstOrder;
@@ -28,7 +28,7 @@ public class AtomicFormula extends Formula {
 			terms = new char[t.length];
 		}
 		
-		literal = lit;
+		descriptor = lit;
 		
 		for (int i = 0; i < t.length; i++) {
 			terms[i] = t[i];
@@ -41,10 +41,10 @@ public class AtomicFormula extends Formula {
 	public String toString() {
 		String formString = null;
 		if (!firstOrder) {
-			formString += literal;
+			formString += descriptor;
 		}
 		else {
-			formString += literal;
+			formString += descriptor;
 			formString += "(";
 			for (int i = 0; i < terms.length; i++) {
 				formString += terms[i];

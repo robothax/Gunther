@@ -45,7 +45,7 @@ public class FirstOrderFormula extends Formula {
 				formString += ", ";
 		}
 		
-		formString += "[" + arg.toString() + "]";
+		formString += " [" + arg.toString() + "]";
 		return formString;
 	}
 }

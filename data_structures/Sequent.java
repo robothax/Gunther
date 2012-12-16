@@ -9,37 +9,30 @@ import java.util.LinkedList;
  */
 public class Sequent {
 	 
-	private LinkedList<Object> Hypotheses;
-	private LinkedList<Object> Conclusions;
+	private LinkedList<Formula> Hypotheses;
+	private LinkedList<Formula> Conclusions;
 	
 	public Sequent() {
-		Hypotheses = new LinkedList<Object>();
-		Conclusions = new LinkedList<Object>();
+		Hypotheses = new LinkedList<Formula>();
+		Conclusions = new LinkedList<Formula>();
 	}
 	
-	public Sequent(LinkedList<Object> hypo, LinkedList<Object> conc) {
+	public Sequent(LinkedList<Formula> hypo, LinkedList<Formula> conc) {
 		Hypotheses = hypo;
 		Conclusions = conc;
 	}
 	
-	public LinkedList<Object> getHypotheses() {	return Hypotheses;	}
-	public LinkedList<Object> getConclusions() {	return Conclusions;	}
+	public LinkedList<Formula> getHypotheses() {	return Hypotheses;	}
+	public LinkedList<Formula> getConclusions() {	return Conclusions;	}
 	
 	/**
 	 * Determines if the sequent is an axiom.
-	 * A sequent is an axiom if the same literal is in both the hypotheses and the conclusions.
-	 * @return
+	 * A sequent is an axiom if the same atomic formula is in both the hypotheses and the conclusions.
+	 * @return Returns true if a sequent represents an axiom, false if otherwise.
 	 */
 	//@TARGET FOR OPTIMIZATION
 	public boolean isAxiom() {
-		Object[] hypo = Hypotheses.toArray();
-		Object[] conc = Conclusions.toArray();
-		for (Object f1: hypo) {
-			for (Object f2: conc) {
-				if (f1.equals(f2))
-					return true;
-			}
-		}
+		//TODO
 		return false;
 	}
 	
@@ -53,8 +46,8 @@ public class Sequent {
 	 */
 	public boolean isLeftAtomic() {
 		for (int i = 0; i < Hypotheses.size(); i++) {
-			if (!Hypotheses.get(i).getClass().getCanonicalName().equals("data_structures.LiteralFormula")) {
-				Object f = Hypotheses.remove(i);
+			if (!(Hypotheses.get(i) instanceof AtomicFormula)) {
+				Formula f = Hypotheses.remove(i);
 				Hypotheses.addFirst(f);
 				return false;
 			}
@@ -72,8 +65,8 @@ public class Sequent {
 	 */
 	public boolean isRightAtomic() {
 		for (int i = 0; i < Conclusions.size(); i++) {
-			if (!(Conclusions.get(i).getClass().getCanonicalName().equals("data_structures.LiteralFormula"))) {
-				Object f = Conclusions.remove(i);
+			if (!(Conclusions.get(i) instanceof AtomicFormula)) {
+				Formula f = Conclusions.remove(i);
 				Conclusions.addFirst(f);
 				return false;
 			}
@@ -84,7 +77,7 @@ public class Sequent {
 	public String toString() {
 		String seq = "";
 		
-		Iterator<Object> hit = Hypotheses.descendingIterator();
+		Iterator<Formula> hit = Hypotheses.descendingIterator();
 		while(hit.hasNext()) {
 			seq += hit.next().toString();
 			if (hit.hasNext())
@@ -92,7 +85,7 @@ public class Sequent {
 		}
 		seq += " |- ";
 		
-		Iterator<Object> cit = Conclusions.iterator();
+		Iterator<Formula> cit = Conclusions.iterator();
 		while(cit.hasNext()) {
 			seq += cit.next().toString();
 			if (cit.hasNext())

@@ -3,6 +3,8 @@ import data_structures.*;
 
 import java.util.LinkedList;
 import java.util.Vector;
+
+import prover.ThreadMonitor;
 /**
  * 
  * @author Jeffrey Kabot
@@ -13,12 +15,12 @@ public class Prover implements Runnable {
 	private static Vector<Thread> branches;
 	private static ProofTree record;
 	private static volatile boolean stop;
-	private static volatile Vector<Boolean> doneYet;
 	private Sequent localBranch;
 	private ProofNode currentNode;
+	private static ThreadMonitor tm;
 	private int doneYetIndex=0;
 	
-	private static final Boolean FALSE = new Boolean(false);
+	//private static final Boolean FALSE = new Boolean(false);
 	
 	/**
 	 * Retrieves the record containing all the proof states propagated by the prover.
@@ -35,9 +37,11 @@ public class Prover implements Runnable {
 	 */
 	public static void initProof(Sequent query) { //initialize proof
 		stop = false;
-		doneYet = new Vector<Boolean>();
+		//doneYet = new Vector<Boolean>();
 		record = new ProofTree(query);
 		new Prover(query, record.getRoot());
+		tm = new ThreadMonitor();
+
 	}
 	
 	/**
@@ -54,8 +58,8 @@ public class Prover implements Runnable {
 		currentNode = initNode;
 		
 		Thread t = new Thread(this, "Sequent " + branch);
-		doneYetIndex = doneYet.size();
-		doneYet.add(new Boolean(false));
+		tm.addThread(new Boolean(false));
+		doneYetIndex=tm.getDoneYet().size();
 		//indicate that there will be a new proof thread running
 		branches.add(t);
 		t.start();
@@ -87,13 +91,11 @@ public class Prover implements Runnable {
 			}*/
 		}
 		//when the thread is done set it as such.
-		doneYet.setElementAt(new Boolean(true), doneYetIndex);
+		tm.getDoneYet().setElementAt(new Boolean(true), doneYetIndex);
 		//check if any of the other threads are not done, if one is not done simply return from this function
-		for(int i=0; i<doneYet.size(); i++){
-			if(doneYet.get(i).equals(FALSE)) return;
-		}
-		//if every other thread is done then print the proof
+		if(tm.checkIfDone()) return;
 		record.printProof(record.getRoot());
+
 	}
 	
 	/**

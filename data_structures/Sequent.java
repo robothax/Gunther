@@ -9,21 +9,21 @@ import java.util.LinkedList;
  */
 public class Sequent {
 	 
-	private LinkedList<Formula> Hypotheses;
-	private LinkedList<Formula> Conclusions;
+	private LinkedList<Object> Hypotheses;
+	private LinkedList<Object> Conclusions;
 	
 	public Sequent() {
-		Hypotheses = new LinkedList<Formula>();
-		Conclusions = new LinkedList<Formula>();
+		Hypotheses = new LinkedList<Object>();
+		Conclusions = new LinkedList<Object>();
 	}
 	
-	public Sequent(LinkedList<Formula> hypo, LinkedList<Formula> conc) {
+	public Sequent(LinkedList<Object> hypo, LinkedList<Object> conc) {
 		Hypotheses = hypo;
 		Conclusions = conc;
 	}
 	
-	public LinkedList<Formula> getHypotheses() {	return Hypotheses;	}
-	public LinkedList<Formula> getConclusions() {	return Conclusions;	}
+	public LinkedList<Object> getHypotheses() {	return Hypotheses;	}
+	public LinkedList<Object> getConclusions() {	return Conclusions;	}
 	
 	/**
 	 * Determines if the sequent is an axiom.
@@ -53,8 +53,8 @@ public class Sequent {
 	 */
 	public boolean isLeftAtomic() {
 		for (int i = 0; i < Hypotheses.size(); i++) {
-			if (!Hypotheses.get(i).isAtomic()) {
-				Formula f = Hypotheses.remove(i);
+			if (!Hypotheses.get(i).getClass().getCanonicalName().equals("data_structures.LiteralFormula")) {
+				Object f = Hypotheses.remove(i);
 				Hypotheses.addFirst(f);
 				return false;
 			}
@@ -72,8 +72,8 @@ public class Sequent {
 	 */
 	public boolean isRightAtomic() {
 		for (int i = 0; i < Conclusions.size(); i++) {
-			if (!Conclusions.get(i).isAtomic()) {
-				Formula f = Conclusions.remove(i);
+			if (!(Conclusions.get(i).getClass().getCanonicalName().equals("data_structures.LiteralFormula"))) {
+				Object f = Conclusions.remove(i);
 				Conclusions.addFirst(f);
 				return false;
 			}
@@ -84,7 +84,7 @@ public class Sequent {
 	public String toString() {
 		String seq = "";
 		
-		Iterator<Formula> hit = Hypotheses.descendingIterator();
+		Iterator<Object> hit = Hypotheses.descendingIterator();
 		while(hit.hasNext()) {
 			seq += hit.next().toString();
 			if (hit.hasNext())
@@ -92,7 +92,7 @@ public class Sequent {
 		}
 		seq += " |- ";
 		
-		Iterator<Formula> cit = Conclusions.iterator();
+		Iterator<Object> cit = Conclusions.iterator();
 		while(cit.hasNext()) {
 			seq += cit.next().toString();
 			if (cit.hasNext())

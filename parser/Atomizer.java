@@ -7,11 +7,11 @@ import java.util.Vector;
 import data_structures.AtomicFormula;
 import data_structures.Operator;
 
-public class TheorumProver {
+public class Atomizer {
 	
 	private HashMap<Double, AtomicFormula>Atomics;
 	private HashMap<Character, Operator>operators;
-	public TheorumProver(){
+	public Atomizer(){
 		Atomics =new HashMap<Double, AtomicFormula>();
 		operators = new HashMap<Character, Operator>();
 		operators.put('=', Operator.EQUIVALENCE);
@@ -19,15 +19,6 @@ public class TheorumProver {
 		operators.put('v', Operator.DISJUNCTION);
 		operators.put('^', Operator.CONJUNCTION);
 		operators.put('~', Operator.NEGATION);
-	}
-	public static void main(String[] args){
-		
-	}
-	public HashMap<Double, AtomicFormula> getAtomics() {
-		return Atomics;
-	}
-	public void setAtomics(HashMap<Double, AtomicFormula> Atomics) {
-		this.Atomics = Atomics;
 	}
 	public void addAtomic(String Atomic){
 		AtomicFormula toAdd= new AtomicFormula(Atomic, getTerms(Atomic));
@@ -64,6 +55,9 @@ public class TheorumProver {
 		}
 		StringTokenizer st = new StringTokenizer(newString, ",");
 		while(st.hasMoreElements()) vs.add(st.nextToken());
+		if(vs.isEmpty()){
+			return new String[0];
+		}
 		return (String[])vs.toArray();
 	}
 }

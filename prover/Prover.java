@@ -4,6 +4,8 @@ import data_structures.*;
 import java.util.LinkedList;
 import java.util.Vector;
 
+
+import parser.Parser;
 import prover.ThreadMonitor;
 /**
  * 
@@ -21,7 +23,9 @@ public class Prover implements Runnable {
 	private int doneYetIndex=0;
 	
 	//private static final Boolean FALSE = new Boolean(false);
-	
+	public static void main(String arg[]){
+		initProof(Parser.getParser().initParser("a>(a>b)>b"));
+	}
 	/**
 	 * Retrieves the record containing all the proof states propagated by the prover.
 	 * @return

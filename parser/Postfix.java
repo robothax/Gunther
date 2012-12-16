@@ -5,7 +5,7 @@ import java.util.Stack;
 public class Postfix {
 	public Postfix(String input){
 	}
-	public String infixToPostfix(String infix){
+	public static String infixToPostfix(String infix){
 		String outfix= "";
 		Stack<String> stack = new Stack<String>();
 		//go through the whole input

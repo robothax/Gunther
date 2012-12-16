@@ -1,10 +1,7 @@
 package data_structures;
 
 /**
- * A first-order formula is one with a quantifier on some number of terms paired with some formula,
- * possibly compound or atomic (but, importantly, not first-order again), in which the terms are bound or are free
- * (i.e. Ex [P(x) \/ A])
- * @author Jeffrey Kabot
+ * Basically the first order literal. Its not 
  *
  */
 public class FirstOrderFormula extends Formula {

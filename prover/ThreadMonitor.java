@@ -8,12 +8,6 @@ public class ThreadMonitor {
 	public ThreadMonitor(){
 		doneYet=new Vector<Boolean>();
 	}
-	public Vector<Boolean> getDoneYet() {
-		return doneYet;
-	}
-	public void setDoneYet(Vector<Boolean> doneYet) {
-		this.doneYet = doneYet;
-	}
 	
 	public void addThread(boolean addBool){
 		doneYet.add(addBool);
@@ -23,5 +17,13 @@ public class ThreadMonitor {
 			if(doneYet.get(i).equals(FALSE)) return false;
 		}
 		return true;
+	}
+
+	public Vector<Boolean> getDoneYet() {
+		return doneYet;
+	}
+
+	public void setDoneYet(Vector<Boolean> doneYet) {
+		this.doneYet = doneYet;
 	}
 }

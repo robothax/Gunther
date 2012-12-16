@@ -15,7 +15,11 @@ public class FormulaList extends LinkedList<Formula> {
 		super();
 		atoms = new ArrayList<Formula>();
 	}
-	
+	public FormulaList(Formula f){
+		super();
+		atoms = new ArrayList<Formula>();
+		atoms.add(f);
+	}
 	
 	public boolean add(Formula f) {
 		if (f instanceof AtomicFormula)

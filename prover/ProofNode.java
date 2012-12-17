@@ -40,12 +40,12 @@ public class ProofNode {
 	public void setParent(ProofNode p) {
 		parent = p;
 	}
-	public synchronized void setChildren(ProofNode... c) {
+	/*public synchronized void setChildren(ProofNode... c) {
 		for (int i = 0; i < c.length && i < 2; i++) {
 			lchild = c[0];
 			rchild = c[1];
 		}
-	}
+	}*/
 	public synchronized void setChild(ProofNode c) {
 		if (lchild == null) {
 			lchild = c;
@@ -58,10 +58,10 @@ public class ProofNode {
 		}
 	}
 	
-	public synchronized void setLChild(ProofNode l) {
+	/*public synchronized void setLChild(ProofNode l) {
 		lchild = l;
 	}
 	public synchronized void setRChild(ProofNode r) {
 		rchild = r;
-	}
+	}*/
 }

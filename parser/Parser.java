@@ -12,7 +12,7 @@ import data_structures.Sequent;
 public class Parser {
 	
 	private static Parser parse;
-	private Stack<Formula> formuli;
+	private static Stack<Formula> formuli;
 	
 	private Parser(){
 		formuli = new Stack<Formula>();
@@ -25,7 +25,10 @@ public class Parser {
 		return parse;
 	}
 	
-	public Sequent initParser(String statement){
+	public  Sequent parse(String statement){
+		
+		formuli = new Stack<Formula>();
+		
 		String currentLiteral="";
 		statement=Postfix.infixToPostfix(statement);
 		Atomizer tp = new Atomizer();
@@ -39,8 +42,9 @@ public class Parser {
 				currentLiteral="";
 			}
 		}
-		
-		return new Sequent(new FormulaList(),new FormulaList(secondRun(statement, tp)));
+		FormulaList init = new FormulaList();
+		init.add(secondRun(statement, tp));
+		return new Sequent(new FormulaList(), init);
 	}
 	private Formula secondRun(String statement, Atomizer tp){
 		for(int i=0; i<statement.length(); i++){
@@ -67,9 +71,9 @@ public class Parser {
 				else{
 					newForm = new CompoundFormula(oper, (Formula[])args);
 				}
-				this.formuli.add(newForm);
+				formuli.add(newForm);
 			}
 		}
-		return this.formuli.pop();
+		return formuli.pop();
 	}
 }

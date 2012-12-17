@@ -2,24 +2,20 @@ package data_structures;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-
+/**
+ * 
+ * @author Jeffrey Kabot
+ *
+ */
 public class FormulaList extends LinkedList<Formula> {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private ArrayList<Formula> atoms;
 	
 	public FormulaList() {
 		super();
 		atoms = new ArrayList<Formula>();
 	}
-	public FormulaList(Formula f){
-		super();
-		atoms = new ArrayList<Formula>();
-		atoms.add(f);
-	}
+	
 	
 	public boolean add(Formula f) {
 		if (f instanceof AtomicFormula)

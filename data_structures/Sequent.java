@@ -1,21 +1,23 @@
 package data_structures;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 /**
  * 
- * @author Jeffrey Kabot
+ * @author Jeffrey Kabot, Aaron Meltzer
  *
  */
 public class Sequent {
 	 
 	private FormulaList Hypotheses;
 	private FormulaList Conclusions;
-
+	
 	public Sequent() {
 		Hypotheses = new FormulaList();
 		Conclusions = new FormulaList();
 	}
 	
-	public Sequent(FormulaList hypo,FormulaList conc) {
+	public Sequent(FormulaList hypo, FormulaList conc) {
 		Hypotheses = hypo;
 		Conclusions = conc;
 	}
@@ -28,9 +30,17 @@ public class Sequent {
 	 * A sequent is an axiom if the same atomic formula is in both the hypotheses and the conclusions.
 	 * @return Returns true if a sequent represents an axiom, false if otherwise.
 	 */
-	//@TARGET FOR OPTIMIZATION
 	public boolean isAxiom() {
-		//TODO
+		ArrayList<Formula> leftAtom = Hypotheses.getAtoms();
+		ArrayList<Formula> rightAtom = Conclusions.getAtoms();
+		
+		for (int i = 0; i < leftAtom.size(); i++) {
+			for (int j = 0; j < rightAtom.size(); j++) {
+				if (leftAtom.get(i).equals(rightAtom.get(j))) {
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 	
@@ -44,7 +54,6 @@ public class Sequent {
 	 */
 	public boolean isLeftAtomic() {
 		return Hypotheses.isAtomic();
-
 	}
 	
 	/**
@@ -60,7 +69,7 @@ public class Sequent {
 	}
 	
 	public String toString() {
-String seq = "";
+		String seq = "";
 		
 		Formula[] hypo = Hypotheses.toArray();
 		for (int i = hypo.length-1; i >= 0; i--) {

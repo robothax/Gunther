@@ -1,14 +1,17 @@
 package data_structures;
 
 /**
- * Basically the first order literal. Its not 
+ * A first-order formula is one with a quantifier on some number of terms paired with some formula,
+ * possibly compound or atomic (but, importantly, not first-order again), in which the terms are bound or are free
+ * (i.e. Ex [P(x) \/ A])
+ * @author Jeffrey Kabot
  *
  */
 public class FirstOrderFormula extends Formula {
 	
 	private Formula arg;
 	private Operator quantifier;
-	private String[] terms;
+	private char[] terms;
 	
 	/**
 	 * Constructor for first-order formula
@@ -16,18 +19,19 @@ public class FirstOrderFormula extends Formula {
 	 * @param q Quantifier on the terms
 	 * @param t List of terms
 	 */
-	public FirstOrderFormula(Formula f, Operator q, String[] t) {
+	public FirstOrderFormula(Formula f, Operator q, char... t) {
 		if (q != Operator.UNIVERSAL && q != Operator.EXISTENTIAL)
-			throw new IllegalArgumentException("Invalid quantifier. I mean seriously man. wtf.");
+			throw new IllegalArgumentException("Invalid quantifier");
 		
 		arg = f;
 		quantifier = q;
+		
 		terms = t;
 	}
 	
 	public Operator getQuantifier() {	return quantifier;	}
 	public Formula getArgument() 	{	return arg;		}
-	public String[] getTerms()	{	return terms;		}
+	public char[] getTerms()	{	return terms;		}
 	
 	public String toString() {
 		String formString = null;
@@ -39,7 +43,7 @@ public class FirstOrderFormula extends Formula {
 				formString += ", ";
 		}
 		
-		formString += "[" + arg.toString() + "]";
+		formString += " [" + arg.toString() + "]";
 		return formString;
 	}
 }

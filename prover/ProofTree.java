@@ -8,13 +8,16 @@ import data_structures.Sequent;
 public class ProofTree {
 	
 	private ProofNode root;
+	boolean success;
 	
 	ProofTree() {
 		root = null;
+		success = true;
 	}
 	
 	ProofTree(Sequent init) {
 		root = new ProofNode(init);
+		success = false;
 	}
 	
 	public ProofNode getRoot() {	return root;	}
@@ -23,18 +26,35 @@ public class ProofTree {
 		root = r;
 	}
 	
+	void unsuccessful() {
+		success = false;
+	}
+	
+	public boolean isSucess() {
+		return success;
+	}
+	
+	/**
+	 * Generic print proof.  Prints proof from the beginning.
+	 */
+	public void printProof() {
+		System.out.println("Proof " + success + ":");
+		printProof(root);
+	}
+	
 	/**
 	 * Post order traversal of the proofTree beginning with the node referenced by start.
 	 * @param start
 	 * The node for which to show the proof
 	 */
-	public void printProof(ProofNode start) {
+	private void printProof(ProofNode start) {
 		if (start == null)
 			return;
+		
 		if (start.getLChild() != null)
-			System.out.println(start.getLChild().getState());
+			printProof(start.getLChild());
 		if (start.getRChild() != null)
-			System.out.println(start.getRChild().getState());
+			printProof(start.getRChild());
 		
 		System.out.println(start.getState());
 	}

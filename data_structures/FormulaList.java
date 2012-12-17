@@ -103,6 +103,13 @@ public class FormulaList extends LinkedList<Formula> {
 		
 		return farr;
 	}
+	
+	public FormulaList clone() {
+		FormulaList fl = (FormulaList) super.clone();
+		fl.atoms = (ArrayList<Formula>) this.atoms.clone();
+		
+		return fl;
+	}
 
 }
 

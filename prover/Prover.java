@@ -271,10 +271,10 @@ public class Prover implements Runnable {
 		Formula f_sub1 = cf.getArguments()[0];
 		Formula f_sub2 = cf.getArguments()[1];
 
-		Sequent branch1 = new Sequent(left, right);
+		Sequent branch1 = new Sequent(left.clone(), right.clone());
 		branch1.getConclusions().addFirst(f_sub1);
 
-		Sequent branch2 = new Sequent(left, right);
+		Sequent branch2 = new Sequent(left.clone(), right.clone());
 		branch2.getConclusions().addFirst(f_sub2);
 
 		new Prover(branch1, new ProofNode(branch1, pNode));
@@ -288,10 +288,10 @@ public class Prover implements Runnable {
 		Formula f_sub1 = cf.getArguments()[0];
 		Formula f_sub2 = cf.getArguments()[1];
 
-		Sequent branch1 = new Sequent(left, right);
+		Sequent branch1 = new Sequent(left.clone(), right.clone());
 		branch1.getHypotheses().addFirst(f_sub1);
 
-		Sequent branch2 = new Sequent(left, right);
+		Sequent branch2 = new Sequent(left.clone(), right.clone());
 		branch2.getHypotheses().addFirst(f_sub2);
 
 		new Prover(branch1, new ProofNode(branch1, pNode));
@@ -315,10 +315,10 @@ public class Prover implements Runnable {
 		Formula f_sub1 = cf.getArguments()[0];
 		Formula f_sub2 = cf.getArguments()[1];
 
-		Sequent branch1 = new Sequent(left, right);
+		Sequent branch1 = new Sequent(left.clone(), right.clone());
 		branch1.getConclusions().addFirst(f_sub1);
-
-		Sequent branch2 = new Sequent(left, right);
+		
+		Sequent branch2 = new Sequent(left.clone(), right.clone());
 		branch2.getHypotheses().addFirst(f_sub2);
 
 		new Prover(branch1, new ProofNode(branch1, pNode));
@@ -343,11 +343,11 @@ public class Prover implements Runnable {
 		Formula f_sub1 = cf.getArguments()[0];
 		Formula f_sub2 = cf.getArguments()[1];
 
-		Sequent branch1 = new Sequent(left, right);
+		Sequent branch1 = new Sequent(left.clone(), right.clone());
 		branch1.getHypotheses().addFirst(f_sub1);
 		branch1.getHypotheses().addFirst(f_sub2);
 
-		Sequent branch2 = new Sequent(left, right);
+		Sequent branch2 = new Sequent(left.clone(), right.clone());
 		branch2.getConclusions().addFirst(f_sub2);
 		branch2.getConclusions().addFirst(f_sub1);
 
@@ -362,11 +362,11 @@ public class Prover implements Runnable {
 		Formula f_sub1 = cf.getArguments()[0];
 		Formula f_sub2 = cf.getArguments()[1];
 
-		Sequent branch1 = new Sequent(left, right);
+		Sequent branch1 = new Sequent(left.clone(), right.clone());
 		branch1.getHypotheses().addFirst(f_sub1);
 		branch1.getConclusions().addFirst(f_sub2);
 
-		Sequent branch2 = new Sequent(left, right);
+		Sequent branch2 = new Sequent(left.clone(), right.clone());
 		branch2.getHypotheses().addFirst(f_sub2);
 		branch2.getConclusions().addFirst(f_sub1);
 

@@ -24,7 +24,7 @@ public class CompoundFormula extends Formula {
 	public Formula[] getArguments() {	return arguments;	}
 	
 	public String toString() {
-		String formString = null;
+		String formString = "";
 		if (op.getArity() == 1) {	//if  the formula is composed of only one subformula then prefix the subformula with the operator
 			formString += op.toString() + arguments[0].toString();
 		}

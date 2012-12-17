@@ -76,7 +76,7 @@ public class Sequent {
 			if (i-1 >= 0)
 				seq += ", ";
 		}
-		seq += " |- ";
+		seq += " \u22A2 ";
 		
 		Formula[] conc = Conclusions.toArray();
 		for (int i = conc.length-1; i >= 0; i--) {
@@ -84,7 +84,7 @@ public class Sequent {
 			if (i-1 >= 0)
 				seq += ", ";
 		}
-		
+		seq+= '\0';
 		return seq;
 	}
 	

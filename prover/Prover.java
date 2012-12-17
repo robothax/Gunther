@@ -1,8 +1,6 @@
 package prover;
 import data_structures.*;
 
-import java.util.Vector;
-
 import prover.ThreadMonitor;
 /**
  * 
@@ -11,7 +9,6 @@ import prover.ThreadMonitor;
  */
 public class Prover implements Runnable {
 
-	private static Vector<Thread> branches;
 	private static ProofTree record;
 	private static volatile boolean stop;
 	private Sequent localBranch;
@@ -31,8 +28,8 @@ public class Prover implements Runnable {
 	public static void initProof(Sequent query) { //initialize proof
 		stop = false;
 		record = new ProofTree(query);
-		new Prover(query, record.getRoot());
 		tm = new ThreadMonitor();
+		new Prover(query, record.getRoot());
 	}
 	
 	/**
@@ -66,9 +63,9 @@ public class Prover implements Runnable {
 
 		Thread t = new Thread(this, "Sequent " + branch);
 		tm.addThread(new Boolean(false));
-		doneYetIndex=tm.getDoneYet().size();
+		doneYetIndex=tm.getDoneYet().size()-1;
 		//indicate that there will be a new proof thread running
-		branches.add(t);
+		//branches.add(t);
 		t.start();
 	}
 	/**
@@ -78,12 +75,11 @@ public class Prover implements Runnable {
 	 */
 	public void run() {
 		//use another thread to periodically check if we have any thread still running?
-
-		Thread t = Thread.currentThread();
-
+		
+		
 		//if the thread returned true then it either reached axioms or branched into new sequent threads, so remove the thread from the vector
 		if (prove(localBranch, currentNode)) {
-			branches.remove(t);
+			//branches.remove(t);
 		}
 		//if failure, then stop all other threads, we can't have a proof
 		else {
@@ -239,7 +235,7 @@ public class Prover implements Runnable {
 			else {}
 		}
 		//we don't get here
-		return false;
+		return true;
 	}
 
 	private void leftNegation(Sequent branch, CompoundFormula cf) {

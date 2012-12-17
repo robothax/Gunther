@@ -22,11 +22,11 @@ public class Operator {
 	public static final Operator EXISTENTIAL = new Operator(OperatorType.EXISTENTIAL, 1);
 	public static final Operator UNIVERSAL = new Operator(OperatorType.UNIVERSAL, 1);
 	
-	public static final String IMPLICATION_SYM = "=>";
-	public static final String CONJUNCTION_SYM = "/\\";
-	public static final String DISJUNCTION_SYM = "\\/";
-	public static final String NEGATION_SYM = "~";
-	public static final String EQUIVALENCE_SYM = "<=>";
+	public static final String IMPLICATION_SYM = "\u21D2";
+	public static final String CONJUNCTION_SYM = "\u2227";
+	public static final String DISJUNCTION_SYM = "\u2228";
+	public static final String NEGATION_SYM = "\u00AC";
+	public static final String EQUIVALENCE_SYM = "\u21D4";
 	
 	public static final String EXISTENTIAL_SYM = "\u2204";
 	public static final String UNIVERSAL_SYM = "\u2200";

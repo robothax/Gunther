@@ -17,7 +17,7 @@ public class ProofTree {
 	
 	ProofTree(Sequent init) {
 		root = new ProofNode(init);
-		success = false;
+		success = true;
 	}
 	
 	public ProofNode getRoot() {	return root;	}

@@ -34,7 +34,7 @@ public class AtomicFormula extends Formula {
 	public String[] getTerms() {	return terms;	}
 	
 	public String toString() {
-		String formString = null;
+		String formString = "";
 		if (!firstOrder) {
 			formString += descriptor;
 		}

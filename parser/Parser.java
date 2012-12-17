@@ -33,7 +33,7 @@ public class Parser {
 		statement=Postfix.infixToPostfix(statement);
 		Atomizer tp = new Atomizer();
 		for(int i=0; i<statement.length(); i++){
-			if(!Postfix.checkIfOperand(String.valueOf(statement.charAt(i)))){
+			if(Postfix.getPrecedent(String.valueOf(statement.charAt(i)))==6){
 				while(statement.charAt(i)!=':'){
 					currentLiteral+=statement.charAt(i);
 					i++;
@@ -48,7 +48,7 @@ public class Parser {
 	}
 	private static Formula secondRun(String statement, Atomizer tp){
 		for(int i=0; i<statement.length(); i++){
-			if(!Postfix.checkIfOperand(String.valueOf(statement.charAt(i)))){
+			if(Postfix.getPrecedent(String.valueOf(statement.charAt(i)))==6){
 				String currentLiteral = "";
 				while(statement.charAt(i)!=':'){
 					currentLiteral+=statement.charAt(i);

@@ -14,15 +14,18 @@ public class Postfix {
 			 * If the current character is not an operand just add it to the outfix. Also put a ":" to signify
 			 * that it is not an operand. 
 			 */
-			if(!checkIfOperand(String.valueOf(infix.charAt(i)))){
+			if(getPrecedent(String.valueOf(infix.charAt(i)))==6){
 				//lower case is just a variable, upper case is a statement
-				if(infix.charAt(i)>96){
-					outfix+=(infix.charAt(i)+":");
+				if(infix.charAt(i)>64 && infix.charAt(i)<91){
+					while(infix.charAt(i)!=')'){
+						outfix+=infix.charAt(i);
+						i++;
+					}
+					outfix+=')';
+					outfix+=":";
 				}
 				else{
-					while(infix.charAt(i-1)!=')')
-						outfix+=infix.charAt(i);
-					outfix+=":";
+					outfix+=(infix.charAt(i)+":");
 				}
 			}
 			else{
@@ -77,19 +80,14 @@ public class Postfix {
 	public String placeHolder(String token){
 		return token;
 	}
-	public static boolean checkIfOperand(String oper){
-		String[] operators = {"v","^",">","(",")","=","~","A","E"};
-		for(int i=0; i<operators.length; i++) if(oper.equals(operators[i])) return true;
-		return false;
-	}
 	
 	public static int getPrecedent(String operator){
-		if(operator.equals("A") || operator.equals("E")) return 5;
-		else if(operator.equals("=")) return 4;
-		else if(operator.equals(">")) return 3;
-		else if(operator.equals("v"))return 2;
-		else if(operator.equals("^"))return 1;
-		else if(operator.equals("~"))return 0;
-		return 5;
+		if(operator.equals("@") || operator.equals("#")) return 2;
+		else if(operator.equals("=")) return 0;
+		else if(operator.equals(">")) return 1;
+		else if(operator.equals("v"))return 3;
+		else if(operator.equals("^"))return 4;
+		else if(operator.equals("~"))return 5;
+		return 6;
 	}
 }

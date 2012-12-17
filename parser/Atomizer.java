@@ -19,6 +19,8 @@ public class Atomizer {
 		operators.put('v', Operator.DISJUNCTION);
 		operators.put('^', Operator.CONJUNCTION);
 		operators.put('~', Operator.NEGATION);
+		operators.put('@', Operator.UNIVERSAL);
+		operators.put('#', Operator.EXISTENTIAL);
 	}
 	public void addAtomic(String Atomic){
 		AtomicFormula toAdd= new AtomicFormula(Atomic, getTerms(Atomic));
@@ -58,6 +60,13 @@ public class Atomizer {
 		if(vs.isEmpty()){
 			return new String[0];
 		}
-		return (String[])vs.toArray();
+		return convertToStringArray(vs);
+	}
+	public String[] convertToStringArray(Vector<String> vs){
+		String[] newString = new String[vs.size()];
+		for(int i=0; i<vs.size(); i++){
+			newString[i]= vs.get(i);
+		}
+		return newString;
 	}
 }

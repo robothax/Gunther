@@ -107,15 +107,12 @@ public class Sequent {
 		return Conclusions.isMeta();
 	}
 	
-	public Term[] getTerms() {
+	public ArrayList<Term> getTerms() {
 		ArrayList<Term> terms = new ArrayList<Term>();
 		terms.addAll(Hypotheses.getTerms());
 		terms.addAll(Conclusions.getTerms());
 		
-		Term[] arr = new Term[0];
-		arr = terms.toArray(arr);
-		
-		return arr;
+		return terms;
 	}
 	
 }

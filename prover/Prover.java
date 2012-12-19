@@ -1,6 +1,5 @@
 package prover;
 import java.util.ArrayList;
-import java.math.*;
 
 import data_structures.*;
 
@@ -123,11 +122,13 @@ public class Prover implements Runnable {
 			//can we convert a metavariable to a real variable to get an axiom?
 			//look through atoms on both sides, if there is a match in descriptors and one has meta variables and the other does not
 			//then convert the metavariables in one to the instanced variables in the other
-			instantiateLeft(branch, pNode);
+			if (instantiateLeft(branch, pNode))
+				return true;
 			
 		}
 		if (branch.isRightMeta() && !branch.isLeftCompound()) {
-			instantiateRight(branch, pNode);
+			if (instantiateRight(branch, pNode))
+				return true;
 		}
 		
 		if (branch.isAxiom()) {	//branch success
@@ -142,7 +143,8 @@ public class Prover implements Runnable {
 			//pick hypotheses or conclusions
 			//conclusions first, most calls to prove will have all/more elements in the conclusions
 			//have a chance to randomly go to hypotheses instead in case of a contraction loop
-			if (!branch.isRightAtomic() && (branch.isLeftAtomic() || (Math.random() < 0.5))) {	
+			//P(keep working on conclusions | hypotheses can be worked on too) = 0.3
+			if (!branch.isRightAtomic() && (branch.isLeftAtomic() || (Math.random() < 0.3))) {	
 				
 				Formula f = branch.getConclusions().removeFirst();
 				
@@ -406,7 +408,13 @@ public class Prover implements Runnable {
 		//instantiate unique term of fof
 		Term[] terms = fof.getBoundTerms();
 		for (int i = 0; i < terms.length; i++) {
-			String u = Term.getUnique(branch.getTerms());
+			
+			/* get a unique term (i.e not elsewhere in teh sequent) to which to instantiate for each term bound by the first order formula */
+			ArrayList<Term> used = branch.getTerms();
+			used.addAll(fof.getAllTerms());
+			Term[] t = new Term[0];
+			t = used.toArray(t);
+			String u = Term.getUnique(t);
 			if (u == null) {
 				record.unsuccessful();
 				record.printProof();
@@ -423,8 +431,15 @@ public class Prover implements Runnable {
 	private void leftExistential(Sequent branch, FirstOrderFormula fof) {
 		//instantiate unique terms of fof
 		Term[] terms = fof.getBoundTerms();
+		
+		/* get a unique term (occurring no where else in the formula) to instantiate to for each term bound in the first order formula */
 		for (int i = 0; i < terms.length; i++) {
-			String u = Term.getUnique(branch.getTerms());
+			
+			ArrayList<Term> used = branch.getTerms();
+			used.addAll(fof.getAllTerms());
+			Term[] t = new Term[0];
+			t = used.toArray(t);
+			String u = Term.getUnique(t);
 			if (u == null) {
 				record.unsuccessful();
 				record.printProof();
@@ -460,14 +475,14 @@ public class Prover implements Runnable {
 		branch.getConclusions().addFirst(fof.getArgument());
 	}
 	
-	private void instantiateLeft(Sequent branch, ProofNode parent) {
+	private boolean instantiateLeft(Sequent branch, ProofNode parent) {
 		FormulaList left = branch.getHypotheses();
 		FormulaList right = branch.getConclusions();
 		
 		ArrayList<Formula> leftAtoms = left.getAtoms();
 		ArrayList<Formula> rightAtoms = right.getAtoms();
 		
-		String old;
+		Term[] old;
 		
 		for (Formula l: leftAtoms) {
 			AtomicFormula al = (AtomicFormula)l;
@@ -479,41 +494,97 @@ public class Prover implements Runnable {
 					 * we can just match them easily since our parser only handles unary predicates
 					 * but for n-ary predicates this is more complicated
 					 */
-					old = al.getTerms()[0].toString();
-					al.getTerms()[0].setVariable(ar.getTerms()[0].toString());
+					Term[] rightAtomTerms = ar.getTerms();
+					Term[] leftAtomTerms = al.getTerms();
 					
-					new ProofNode(branch, parent, "Metavariable " + old + " instantiated");
+					//used to restore the state of the metavariables in case this doesn't give us a proof
+					old = new Term[leftAtomTerms.length];
+							
+					for (int i = 0; i < leftAtomTerms.length; i++) {
+						if (leftAtomTerms[i].isMeta()) {
+							old[i] = new Term(leftAtomTerms[i].toString());
+							leftAtomTerms[i].setVariable(rightAtomTerms[i].toString());
+						}
+					}
+					
+					if (branch.isAxiom()) {
+						String mv = "";
+						for (int i = 0; i < old.length; i++) {
+							if (old[i] != null) {
+								mv += old[i].toString() + ",";
+							}
+						}
+						mv = mv.substring(0, mv.length() - 1);
+						new ProofNode(branch, parent, "Metavariable(s) " + mv + " instantiated");
+						return true;
+					}
+					else {
+						for (int i = 0; i < leftAtomTerms.length; i++) {
+							if (leftAtomTerms[i].isMeta()) {
+								leftAtomTerms[i].setVariable(old[i].toString());
+							}
+						}
+					}
 				}
 			}
 		}
+		return false;
 	}
 	
-	private void instantiateRight(Sequent branch, ProofNode parent) {
+	private boolean instantiateRight(Sequent branch, ProofNode parent) {
 		FormulaList left = branch.getHypotheses();
 		FormulaList right = branch.getConclusions();
 		
 		ArrayList<Formula> leftAtoms = left.getAtoms();
 		ArrayList<Formula> rightAtoms = right.getAtoms();
 		
-		String old;
+		Term[] old;
 		
 		for (Formula r: rightAtoms) {
 			AtomicFormula ar = (AtomicFormula)r;
 			for (Formula l: leftAtoms) {
 				AtomicFormula al = (AtomicFormula)l;
 				if (ar.isMeta() && al.getDescriptor().equals(ar.getDescriptor())) {
-					/* 
-					 * for each meta variable in ar, try to match it to an instantiated variable in al
-					 * we can just match them easily since our parser only handles unary predicates
-					 * but for n-ary predicates this is more complicated
+					
+					/*
+					 * for each meta variable in ar, match it to a real variable in al
+					 * in general we will only have to match one formula to another to make an axiom
 					 */
-					old = ar.getTerms()[0].toString();
 					
-					ar.getTerms()[0].setVariable(al.getTerms()[0].toString());
+					Term[] rightAtomTerms = ar.getTerms();
+					Term[] leftAtomTerms = al.getTerms();
 					
-					//new ProofNode(branch, parent, "Metavariable " + old + " instantiated");
+					//used to restore the state of the metavariables in case this doesn't give us a proof
+					old = new Term[rightAtomTerms.length];
+							
+					for (int i = 0; i < rightAtomTerms.length; i++) {
+						if (rightAtomTerms[i].isMeta()) {
+							old[i] = new Term(rightAtomTerms[i].toString());
+							rightAtomTerms[i].setVariable(leftAtomTerms[i].toString());
+						}
+					}
+					
+					if (branch.isAxiom()) {
+						String mv = "";
+						for (int i = 0; i < old.length; i++) {
+							if (old[i] != null) {
+								mv += old[i].toString() + ",";
+							}
+						}
+						mv = mv.substring(0, mv.length() - 1);
+						new ProofNode(branch, parent, "Metavariable " + " instantiated");
+						return true;
+					}
+					else {
+						for (int i = 0; i < rightAtomTerms.length; i++) {
+							if (rightAtomTerms[i].isMeta()) {
+								rightAtomTerms[i].setVariable(old[i].toString());
+							}
+						}
+					}
 				}
 			}
 		}
+		return false;
 	}
 }

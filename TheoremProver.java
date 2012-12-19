@@ -20,10 +20,15 @@ public class TheoremProver {
 		System.out.println(q.toString() + "\n");
 		
 		Term.initMetavariables();
+		
+		long start = System.currentTimeMillis();
 		Prover.initProof(q);
 
 		while(!Prover.isComplete());
-
+		long end = System.currentTimeMillis();
+		
 		Prover.getProof().printProof();
+		
+		System.out.printf("Time elapsed: %dms", end-start);
 	}
 }

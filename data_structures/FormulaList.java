@@ -122,6 +122,9 @@ public class FormulaList extends LinkedList<Formula> {
 		for (Formula a: atoms) {
 			terms.addAll(a.getAllTerms());
 		}
+		for (Formula f: this.toArray()) {
+			terms.addAll(f.getAllTerms());
+		}
 		return terms;
 	}
 }

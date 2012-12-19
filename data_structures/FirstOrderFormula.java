@@ -79,4 +79,8 @@ public class FirstOrderFormula extends Formula implements Cloneable {
 		FirstOrderFormula fof = new FirstOrderFormula(f, quantifier, cloneTerms);
 		return fof;
 	}
+	
+	public void bindTerm(Term b) {
+		arg.bindTerm(b);
+	}
 }

@@ -78,6 +78,7 @@ public class Parser {
 				}
 				else if (Character.isUpperCase(currentLiteral.charAt(0)) && currentLiteral.contains("(")) {
 					int parenthesesIndex = currentLiteral.indexOf('(');
+					
 					formuli.add(new AtomicFormula(currentLiteral.substring(0, parenthesesIndex), tp.getTerms(currentLiteral)));
 				}
 				else {
@@ -107,12 +108,18 @@ public class Parser {
 					Term[] argTerms = new Term[0];
 					argTerms = args[0].getAllTerms().toArray(argTerms);
 					
+					/* 
+					 * ensure the variable bound under the quantifier is the same 
+					 * object reference as the occurences of that variable in hte formula
+					 */
 					for (int j = 0; j < quantTerms.length; j++) {
 						for (int k = 0; k < argTerms.length; k++) {
-							if (quantTerms[j].toString().equals(argTerms[k].toString()))
-								quantTerms[j] = argTerms[k];
+							if (quantTerms[j].toString().equals(argTerms[k].toString())) {
+								args[0].bindTerm(quantTerms[j]);
+							}
 						}
 					}
+					
 					
 					newForm = new FirstOrderFormula(args[0] ,oper, quantTerms);
 				}

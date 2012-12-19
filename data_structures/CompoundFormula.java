@@ -12,6 +12,7 @@ public class CompoundFormula extends Formula {
 	private Operator op;
 	private Formula arguments[];
 	private ArrayList<Term> terms;
+	boolean firstOrder = false;
 	
 	/**
 	 * Constructor for compound formula.
@@ -26,6 +27,33 @@ public class CompoundFormula extends Formula {
 		for (int i = 0; i < args.length; i++) {
 			terms.addAll(args[i].getAllTerms());
 		}
+		
+		/* we say that a compound formula is first order if one of its arguments is first order or any subargument of its arguments are first order
+		 * i.e. that a first order formula appears somewhere in it
+		 */
+		for (Formula f: args) {
+			if (f instanceof FirstOrderFormula || (f instanceof CompoundFormula && ((CompoundFormula)f).firstOrder))
+				firstOrder = true;
+		}
+		
+		/*
+		 * Don't merge between first order arguments
+		 */
+		/*if (!firstOrder) {
+			
+		}*/
+		/* merge terms */
+		//boolean merge = (arguments[0] instanceof AtomicFormula && !(arguments[1] instanceof FirstOrderFormula)) || (arguments[1] instanceof AtomicFormula && !(arguments[0] instance of FirstOrderFormula)) 
+		/*if (args.length == 2 && (arguments[0] instanceof AtomicFormula) && (arguments[1] instanceof AtomicFormula)) {
+			Term[] t0 = ((AtomicFormula)arguments[0]).getTerms();
+			Term[] t1 = ((AtomicFormula)arguments[1]).getTerms();
+			
+			for (int i = 0; i < t0.length; i++) {
+				for (int j = 0; j < t1.length; j++) {
+					if ()
+				}
+			}
+		}*/
 	}
 	
 	public Operator getOperator() 	{	return op;		}
@@ -59,5 +87,11 @@ public class CompoundFormula extends Formula {
 		//copy terms
 		
 		return cf;
+	}
+	
+	public void bindTerm(Term b) {
+		for (int i = 0; i < arguments.length; i++) {
+			arguments[i].bindTerm(b);
+		}
 	}
 }

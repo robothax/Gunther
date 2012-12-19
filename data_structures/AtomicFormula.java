@@ -39,6 +39,7 @@ public class AtomicFormula extends Formula {
 	
 	public boolean isFirstOrder()	{	return firstOrder; 	}
 	public Term[] getTerms() {	return terms;	}
+	public void setTerms(Term[] t) {	terms = t;	}	
 	
 	public ArrayList<Term> getAllTerms() {
 		return allTerms;
@@ -66,7 +67,7 @@ public class AtomicFormula extends Formula {
 			for (int i = 0; i < terms.length; i++) {
 				formString += terms[i];
 				if (i+1 < terms.length)
-					formString += ", ";
+					formString += ",";
 			}
 			formString += ")";
 		}
@@ -80,6 +81,13 @@ public class AtomicFormula extends Formula {
 		}
 		AtomicFormula af = new AtomicFormula(descriptor, cloneTerms);
 		return af;
+	}
+	
+	public void bindTerm(Term b) {
+		for (int i = 0; i < terms.length; i++) {
+			if (terms[i].toString().equals(b.toString()))
+				terms[i] = b;
+		}
 	}
 	
 }

@@ -11,4 +11,5 @@ public abstract class Formula implements Cloneable {
 	public abstract String toString();
 	public abstract Formula clone();
 	public abstract ArrayList<Term> getAllTerms();
+	public abstract void bindTerm(Term b);
 }

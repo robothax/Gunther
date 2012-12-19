@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import data_structures.AtomicFormula;
 import data_structures.Operator;
+import data_structures.Term;
 
 public class Atomizer {
 	
@@ -37,7 +38,7 @@ public class Atomizer {
 	public Operator getOperator(char op){
 		return operators.get(op);
 	}
-	public String[] getTerms(String Atomic){
+	public Term[] getTerms(String Atomic){
 		Vector<String> vs = new Vector<String>();
 		String newString="";;
 		for(int i=0; i<Atomic.length(); i++){
@@ -58,14 +59,14 @@ public class Atomizer {
 		StringTokenizer st = new StringTokenizer(newString, ",");
 		while(st.hasMoreElements()) vs.add(st.nextToken());
 		if(vs.isEmpty()){
-			return new String[0];
+			return new Term[0];
 		}
 		return convertToStringArray(vs);
 	}
-	public String[] convertToStringArray(Vector<String> vs){
-		String[] newString = new String[vs.size()];
+	public Term[] convertToStringArray(Vector<String> vs){
+		Term[] newString = new Term[vs.size()];
 		for(int i=0; i<vs.size(); i++){
-			newString[i]= vs.get(i);
+			newString[i]= new Term(vs.get(i));
 		}
 		return newString;
 	}

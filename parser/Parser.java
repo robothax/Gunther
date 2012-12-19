@@ -33,7 +33,8 @@ public class Parser {
 		statement=Postfix.infixToPostfix(statement);
 		Atomizer tp = new Atomizer();
 		for(int i=0; i<statement.length(); i++){
-			if(Postfix.getPrecedent(String.valueOf(statement.charAt(i)))==6){
+			if(Postfix.getPrecedent(String.valueOf(statement.charAt(i)))==6 && statement.charAt(i)!='(' &&
+					statement.charAt(i)!=')'){
 				while(statement.charAt(i)!=':'){
 					currentLiteral+=statement.charAt(i);
 					i++;

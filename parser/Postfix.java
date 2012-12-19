@@ -14,9 +14,9 @@ public class Postfix {
 			 * If the current character is not an operand just add it to the outfix. Also put a ":" to signify
 			 * that it is not an operand. 
 			 */
-			if(getPrecedent(String.valueOf(infix.charAt(i)))==6){
+			if(getPrecedent(String.valueOf(infix.charAt(i)))==6 && infix.charAt(i)!='(' && infix.charAt(i)!=')'){
 				//lower case is just a variable, upper case is a statement
-				if(infix.charAt(i)>64 && infix.charAt(i)<91){
+				if(infix.charAt(i)>64 && infix.charAt(i)<91 && i+1<infix.length() && infix.charAt(i+1)=='('){
 					while(infix.charAt(i)!=')'){
 						outfix+=infix.charAt(i);
 						i++;

@@ -1,4 +1,7 @@
 package prover;
+import java.util.ArrayList;
+import java.math.*;
+
 import data_structures.*;
 
 import prover.ThreadMonitor;
@@ -85,13 +88,6 @@ public class Prover implements Runnable {
 			//t.setPriority(Thread.MAX_PRIORITY);
 			record.unsuccessful();
 			stop = true;
-			/*branches.remove(t);
-
-			//iterator structure in case we need to do something to each thread
-			Iterator<Thread> it = branches.iterator();
-			while(it.hasNext()) {
-				branches.remove(it.next());
-			}*/
 		}
 		//when the thread is done set it as such.
 		tm.getDoneYet().setElementAt(new Boolean(true), doneYetIndex);
@@ -121,18 +117,32 @@ public class Prover implements Runnable {
 		}
 
 		//add this sequent to the proof tree
-
+		
+		//check metavariables
+		if (branch.isLeftMeta() && !branch.isRightCompound()) {
+			//can we convert a metavariable to a real variable to get an axiom?
+			//look through atoms on both sides, if there is a match in descriptors and one has meta variables and the other does not
+			//then convert the metavariables in one to the instanced variables in the other
+			instantiateLeft(branch, pNode);
+			
+		}
+		if (branch.isRightMeta() && !branch.isLeftCompound()) {
+			instantiateRight(branch, pNode);
+		}
+		
 		if (branch.isAxiom()) {	//branch success
 			return true;
 		}
-		else if (branch.isRightAtomic() && branch.isLeftAtomic()){//branch failure
+		//possible branch failure, this doesn't happen in proofs requiring contraction, so we should add another condition
+		else if (branch.isRightAtomic() && branch.isLeftAtomic()){
 			return false;
 		}
 		else {	//then keep breaking down the branch
 			OperatorType o;
 			//pick hypotheses or conclusions
 			//conclusions first, most calls to prove will have all/more elements in the conclusions
-			if (!branch.isRightAtomic()) {	
+			//have a chance to randomly go to hypotheses instead in case of a contraction loop
+			if (!branch.isRightAtomic() && (branch.isLeftAtomic() || (Math.random() < 0.5))) {	
 				
 				Formula f = branch.getConclusions().removeFirst();
 				
@@ -144,7 +154,7 @@ public class Prover implements Runnable {
 					switch (o) {
 					case NEGATION:
 						rightNegation(branch, cf);
-						return prove(branch, new ProofNode(branch, pNode));
+						return prove(branch, new ProofNode(branch, pNode, Operator.NEGATION_SYM + "R"));
 						//break;
 					case CONJUNCTION:
 						rightConjunction(branch, cf, pNode);
@@ -153,11 +163,11 @@ public class Prover implements Runnable {
 						//break;
 					case DISJUNCTION:
 						rightDisjunction(branch, cf);
-						return prove(branch, new ProofNode(branch, pNode));
+						return prove(branch, new ProofNode(branch, pNode, Operator.DISJUNCTION_SYM + "R"));
 						//break;
 					case IMPLICATION:
 						rightImplication(branch, cf);
-						return prove(branch, new ProofNode(branch, pNode));
+						return prove(branch, new ProofNode(branch, pNode, Operator.IMPLICATION_SYM + "R"));
 						//break;
 					case EQUIVALENCE:
 						rightEquivalence(branch, cf, pNode);
@@ -174,10 +184,10 @@ public class Prover implements Runnable {
 					switch (o) {
 					case EXISTENTIAL:
 						rightExistential(branch, fof);
-						return prove(branch, new ProofNode(branch, pNode));
+						return prove(branch, new ProofNode(branch, pNode, Operator.EXISTENTIAL_SYM + "R"));
 					case UNIVERSAL:
 						rightUniversal(branch, fof);
-						return prove(branch, new ProofNode(branch, pNode));
+						return prove(branch, new ProofNode(branch, pNode, Operator.UNIVERSAL_SYM + "R"));
 					}
 				}
 			}
@@ -193,10 +203,10 @@ public class Prover implements Runnable {
 					switch (o) {
 					case NEGATION:
 						leftNegation(branch, cf);
-						return prove(branch, new ProofNode(branch, pNode));
+						return prove(branch, new ProofNode(branch, pNode, Operator.NEGATION_SYM + "L"));
 					case CONJUNCTION:
 						leftConjunction(branch, cf);
-						return prove(branch, new ProofNode(branch, pNode));
+						return prove(branch, new ProofNode(branch, pNode, Operator.CONJUNCTION_SYM + "L"));
 					case DISJUNCTION:
 						leftDisjunction(branch, cf, pNode);
 						//thread branches into two new threads, original thread returns
@@ -222,10 +232,10 @@ public class Prover implements Runnable {
 					switch(o) {
 					case EXISTENTIAL:
 						leftExistential(branch, fof);
-						return prove(branch, new ProofNode(branch, pNode));
+						return prove(branch, new ProofNode(branch, pNode, Operator.EXISTENTIAL_SYM + "L"));
 					case UNIVERSAL:
 						leftUniversal(branch, fof);
-						return prove(branch, new ProofNode(branch, pNode));
+						return prove(branch, new ProofNode(branch, pNode, Operator.UNIVERSAL_SYM + "L"));
 					}
 				}
 			}
@@ -274,8 +284,8 @@ public class Prover implements Runnable {
 		Sequent branch2 = new Sequent(left.clone(), right.clone());
 		branch2.getConclusions().addFirst(f_sub2);
 
-		new Prover(branch1, new ProofNode(branch1, pNode));
-		new Prover(branch2, new ProofNode(branch2, pNode));
+		new Prover(branch1, new ProofNode(branch1, pNode, Operator.CONJUNCTION_SYM + "R1"));
+		new Prover(branch2, new ProofNode(branch2, pNode, Operator.CONJUNCTION_SYM + "R2"));
 	}
 
 	private void leftDisjunction(Sequent branch, CompoundFormula cf, ProofNode pNode) {
@@ -291,8 +301,8 @@ public class Prover implements Runnable {
 		Sequent branch2 = new Sequent(left.clone(), right.clone());
 		branch2.getHypotheses().addFirst(f_sub2);
 
-		new Prover(branch1, new ProofNode(branch1, pNode));
-		new Prover(branch2, new ProofNode(branch2, pNode));
+		new Prover(branch1, new ProofNode(branch1, pNode, Operator.DISJUNCTION_SYM + "L1"));
+		new Prover(branch2, new ProofNode(branch2, pNode, Operator.DISJUNCTION_SYM + "L2"));
 	}
 
 	private void rightDisjunction(Sequent branch, CompoundFormula cf) {
@@ -318,8 +328,8 @@ public class Prover implements Runnable {
 		Sequent branch2 = new Sequent(left.clone(), right.clone());
 		branch2.getHypotheses().addFirst(f_sub2);
 
-		new Prover(branch1, new ProofNode(branch1, pNode));
-		new Prover(branch2, new ProofNode(branch2, pNode));
+		new Prover(branch1, new ProofNode(branch1, pNode, Operator.IMPLICATION_SYM + "L1"));
+		new Prover(branch2, new ProofNode(branch2, pNode, Operator.IMPLICATION_SYM + "L2"));
 	}
 
 	private void rightImplication(Sequent branch, CompoundFormula cf) {
@@ -348,8 +358,8 @@ public class Prover implements Runnable {
 		branch2.getConclusions().addFirst(f_sub2);
 		branch2.getConclusions().addFirst(f_sub1);
 
-		new Prover(branch1, new ProofNode(branch1, pNode));
-		new Prover(branch2, new ProofNode(branch2, pNode));
+		new Prover(branch1, new ProofNode(branch1, pNode, Operator.EQUIVALENCE_SYM + "L1"));
+		new Prover(branch2, new ProofNode(branch2, pNode, Operator.EQUIVALENCE_SYM + "L2"));
 	}
 
 	private void rightEquivalence(Sequent branch, CompoundFormula cf, ProofNode pNode) {
@@ -367,35 +377,143 @@ public class Prover implements Runnable {
 		branch2.getHypotheses().addFirst(f_sub2);
 		branch2.getConclusions().addFirst(f_sub1);
 
-		new Prover(branch1, new ProofNode(branch1, pNode));
-		new Prover(branch2, new ProofNode(branch2, pNode));
+		new Prover(branch1, new ProofNode(branch1, pNode, Operator.EQUIVALENCE_SYM + "R1"));
+		new Prover(branch2, new ProofNode(branch2, pNode, Operator.EQUIVALENCE_SYM + "R2"));
 	}
 	
 	private void leftUniversal(Sequent branch, FirstOrderFormula fof) {
-		//instantiate terms of fof
+		//implicit contraction
+		branch.getHypotheses().addLast(fof.clone());
+		
+		//instantiate dummy terms of fof
+		Term[] terms = fof.getBoundTerms();
+		for (Term t: terms) {
+			String m = Term.getMetavariable();
+			if (m == null) {
+				record.unsuccessful();
+				record.printProof();
+				System.err.println("Too many metavariables in use...\nProof failure");
+				System.exit(1);
+			}
+			t.setVariable(m);
+			t.setMeta(true);
+		}
 		
 		branch.getHypotheses().addFirst(fof.getArgument());
-		//implicit contraction
-		branch.getHypotheses().addLast(fof);
 	}
 	
 	private void rightUniversal(Sequent branch, FirstOrderFormula fof) {
 		//instantiate unique term of fof
+		Term[] terms = fof.getBoundTerms();
+		for (int i = 0; i < terms.length; i++) {
+			String u = Term.getUnique(branch.getTerms());
+			if (u == null) {
+				record.unsuccessful();
+				record.printProof();
+				System.err.println("Too many terms in use..\nProof failure");
+				System.exit(1);
+			}
+			terms[i].setVariable(u);
+			//t.setMeta(false);
+		}
 		
 		branch.getConclusions().addFirst(fof.getArgument());
 	}
 	
 	private void leftExistential(Sequent branch, FirstOrderFormula fof) {
-		//instantiate unique term of fof
+		//instantiate unique terms of fof
+		Term[] terms = fof.getBoundTerms();
+		for (int i = 0; i < terms.length; i++) {
+			String u = Term.getUnique(branch.getTerms());
+			if (u == null) {
+				record.unsuccessful();
+				record.printProof();
+				System.err.println("Too many terms in use...\nProof failure");
+				System.exit(1);
+			}
+			terms[i].setVariable(u);
+			terms[i].setMeta(false);
+		}
 		
 		branch.getHypotheses().addFirst(fof.getArgument());
 	}
 	
 	private void rightExistential(Sequent branch, FirstOrderFormula fof) {
-		//instantiate terms of fof
+		
+		//implicit contraction
+		branch.getConclusions().addLast(fof.clone());
+		
+		//instantiate dummy terms of fof
+		Term[] terms = fof.getBoundTerms();
+		for (Term t: terms) {
+			String m = Term.getMetavariable();
+			if (m == null) {
+				record.unsuccessful();
+				record.printProof();
+				System.err.println("Too many metavariables in use...\nProof failure");
+				System.exit(1);
+			}
+			t.setVariable(m);
+			t.setMeta(true);
+		}
 		
 		branch.getConclusions().addFirst(fof.getArgument());
-		//implicit contraction
-		branch.getConclusions().addLast(fof);
+	}
+	
+	private void instantiateLeft(Sequent branch, ProofNode parent) {
+		FormulaList left = branch.getHypotheses();
+		FormulaList right = branch.getConclusions();
+		
+		ArrayList<Formula> leftAtoms = left.getAtoms();
+		ArrayList<Formula> rightAtoms = right.getAtoms();
+		
+		String old;
+		
+		for (Formula l: leftAtoms) {
+			AtomicFormula al = (AtomicFormula)l;
+			for (Formula r: rightAtoms) {
+				AtomicFormula ar = (AtomicFormula)r;
+				if (al.isMeta() && ar.getDescriptor().equals(al.getDescriptor())) {
+					/* 
+					 * for each meta variable in al, try to match it to an instantiated variable in ar
+					 * we can just match them easily since our parser only handles unary predicates
+					 * but for n-ary predicates this is more complicated
+					 */
+					old = al.getTerms()[0].toString();
+					al.getTerms()[0].setVariable(ar.getTerms()[0].toString());
+					
+					new ProofNode(branch, parent, "Metavariable " + old + " instantiated");
+				}
+			}
+		}
+	}
+	
+	private void instantiateRight(Sequent branch, ProofNode parent) {
+		FormulaList left = branch.getHypotheses();
+		FormulaList right = branch.getConclusions();
+		
+		ArrayList<Formula> leftAtoms = left.getAtoms();
+		ArrayList<Formula> rightAtoms = right.getAtoms();
+		
+		String old;
+		
+		for (Formula r: rightAtoms) {
+			AtomicFormula ar = (AtomicFormula)r;
+			for (Formula l: leftAtoms) {
+				AtomicFormula al = (AtomicFormula)l;
+				if (ar.isMeta() && al.getDescriptor().equals(ar.getDescriptor())) {
+					/* 
+					 * for each meta variable in ar, try to match it to an instantiated variable in al
+					 * we can just match them easily since our parser only handles unary predicates
+					 * but for n-ary predicates this is more complicated
+					 */
+					old = ar.getTerms()[0].toString();
+					
+					ar.getTerms()[0].setVariable(al.getTerms()[0].toString());
+					
+					//new ProofNode(branch, parent, "Metavariable " + old + " instantiated");
+				}
+			}
+		}
 	}
 }

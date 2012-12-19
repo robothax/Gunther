@@ -67,6 +67,14 @@ public class Sequent {
 		return Conclusions.isAtomic();
 	}
 	
+	public boolean isLeftCompound() {
+		return Hypotheses.getAtoms().isEmpty();
+	}
+	
+	public boolean isRightCompound() {
+		return Conclusions.getAtoms().isEmpty();
+	}
+	
 	public String toString() {
 		String seq = "";
 		
@@ -75,8 +83,11 @@ public class Sequent {
 			seq += hypo[i].toString();
 			if (i-1 >= 0)
 				seq += ", ";
+			else
+				seq += " ";
 		}
-		seq += " \u22A2 ";
+		
+		seq += "\u22A2 ";
 		
 		Formula[] conc = Conclusions.toArray();
 		for (int i = conc.length-1; i >= 0; i--) {
@@ -86,6 +97,25 @@ public class Sequent {
 		}
 		seq+= '\0';
 		return seq;
+	}
+	
+	public boolean isLeftMeta() {
+		return Hypotheses.isMeta();
+	}
+	
+	public boolean isRightMeta() {
+		return Conclusions.isMeta();
+	}
+	
+	public Term[] getTerms() {
+		ArrayList<Term> terms = new ArrayList<Term>();
+		terms.addAll(Hypotheses.getTerms());
+		terms.addAll(Conclusions.getTerms());
+		
+		Term[] arr = new Term[0];
+		arr = terms.toArray(arr);
+		
+		return arr;
 	}
 	
 }

@@ -20,6 +20,8 @@ public class ProofNode {
 	private static int nodeIndex;
 	private int number;
 	
+	private String note;
+	
 	ProofNode(Sequent s) {
 		state = s.toString();
 		nodeIndex = 1;
@@ -35,6 +37,18 @@ public class ProofNode {
 		p.setChild(this);
 		number = nodeIndex++;
 		
+	}
+	
+	ProofNode(Sequent s, ProofNode p, String n) {
+		state = s.toString();
+		parent = p;
+		p.setChild(this);
+		number = nodeIndex++;
+		note = n;
+	}
+	
+	public void setNote(String n) {
+		note = n;
 	}
 	
 	public String getState() {	return state;	}
@@ -68,7 +82,7 @@ public class ProofNode {
 		String s = "";
 		s += number + ": " + state;
 		if (parent != null)
-			s+= "\t\t + (Parent = " + parent.number + ")";
+			s+= "\t\t(Parent = " + parent.number + ")\t[" + note + "]";
 		
 		return s;
 	}

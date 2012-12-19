@@ -9,9 +9,6 @@ import java.util.LinkedList;
  */
 public class FormulaList extends LinkedList<Formula> {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Formula> atoms;
 	
@@ -104,12 +101,28 @@ public class FormulaList extends LinkedList<Formula> {
 		return farr;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public FormulaList clone() {
 		FormulaList fl = (FormulaList) super.clone();
 		fl.atoms = (ArrayList<Formula>) this.atoms.clone();
 		
 		return fl;
 	}
-
+	
+	public boolean isMeta() {
+		for (Formula a: atoms) {
+			if (((AtomicFormula)a).isMeta())
+				return true;
+		}
+		return false;
+	}
+	
+	public ArrayList<Term> getTerms() {
+		ArrayList<Term> terms = new ArrayList<Term>();
+		for (Formula a: atoms) {
+			terms.addAll(a.getAllTerms());
+		}
+		return terms;
+	}
 }
 

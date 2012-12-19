@@ -1,5 +1,7 @@
 package data_structures;
 
+import java.util.ArrayList;
+
 /**
  * A compound formula is a sequence of one or of two subformula connected together by a logical operator.
  * @author Jeffrey Kabot, Aaron Meltzer
@@ -9,6 +11,7 @@ public class CompoundFormula extends Formula {
 	
 	private Operator op;
 	private Formula arguments[];
+	private ArrayList<Term> terms;
 	
 	/**
 	 * Constructor for compound formula.
@@ -18,10 +21,19 @@ public class CompoundFormula extends Formula {
 	public CompoundFormula(Operator o, Formula... args) {
 		op = o;
 		arguments = args;
+		
+		terms = new ArrayList<Term>();
+		for (int i = 0; i < args.length; i++) {
+			terms.addAll(args[i].getAllTerms());
+		}
 	}
 	
 	public Operator getOperator() 	{	return op;		}
 	public Formula[] getArguments() {	return arguments;	}
+	
+	public ArrayList<Term> getAllTerms() {
+		return terms;
+	}
 	
 	public String toString() {
 		String formString = "";
@@ -36,5 +48,16 @@ public class CompoundFormula extends Formula {
 			formString += ")";
 		}
 		return formString;
+	}
+
+	public CompoundFormula clone() {
+		Formula[] cloneArgs = new CompoundFormula[arguments.length];
+		for (int i = 0; i < arguments.length; i++) {
+			cloneArgs[i] = arguments[i].clone();
+		}
+		CompoundFormula cf = new CompoundFormula(op, cloneArgs);
+		//copy terms
+		
+		return cf;
 	}
 }

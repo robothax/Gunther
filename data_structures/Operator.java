@@ -28,7 +28,7 @@ public class Operator {
 	public static final String NEGATION_SYM = "\u00AC";
 	public static final String EQUIVALENCE_SYM = "\u21D4";
 	
-	public static final String EXISTENTIAL_SYM = "\u2204";
+	public static final String EXISTENTIAL_SYM = "\u2203";
 	public static final String UNIVERSAL_SYM = "\u2200";
 	
 	public int getArity() {		return arity;	}

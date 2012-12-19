@@ -1,5 +1,6 @@
 package parser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -14,7 +15,9 @@ public class Atomizer {
 	private HashMap<Character, Operator>operators;
 	public Atomizer(){
 		Atomics =new HashMap<Double, AtomicFormula>();
+		
 		operators = new HashMap<Character, Operator>();
+		
 		operators.put('=', Operator.EQUIVALENCE);
 		operators.put('>', Operator.IMPLICATION);
 		operators.put('v', Operator.DISJUNCTION);
@@ -24,7 +27,15 @@ public class Atomizer {
 		operators.put('#', Operator.EXISTENTIAL);
 	}
 	public void addAtomic(String Atomic){
-		AtomicFormula toAdd= new AtomicFormula(Atomic, getTerms(Atomic));
+		AtomicFormula toAdd;
+		
+		int parenthesesIndex = Atomic.indexOf('(');
+		if (parenthesesIndex != -1)
+			toAdd = new AtomicFormula(Atomic.substring(0, parenthesesIndex), getTerms(Atomic));
+		else
+			toAdd = new AtomicFormula(Atomic);
+		
+		
 		double uniqueNumber = 0;
 		for(int i=0; i<Atomic.length(); i++) uniqueNumber+= Atomic.charAt(i);
 		Atomics.put(uniqueNumber, toAdd);
@@ -38,9 +49,15 @@ public class Atomizer {
 	public Operator getOperator(char op){
 		return operators.get(op);
 	}
+	
+	/**
+	 * Retrieves the free terms inside of an atomic formula.
+	 * @param Atomic
+	 * @return
+	 */
 	public Term[] getTerms(String Atomic){
-		Vector<String> vs = new Vector<String>();
-		String newString="";;
+		ArrayList<String> vs = new ArrayList<String>();
+		String newString="";
 		for(int i=0; i<Atomic.length(); i++){
 			if(Atomic.charAt(i)=='('){
 				i++;
@@ -63,11 +80,25 @@ public class Atomizer {
 		}
 		return convertToStringArray(vs);
 	}
-	public Term[] convertToStringArray(Vector<String> vs){
+	public Term[] convertToStringArray(ArrayList<String> vs){
 		Term[] newString = new Term[vs.size()];
 		for(int i=0; i<vs.size(); i++){
 			newString[i]= new Term(vs.get(i));
 		}
 		return newString;
+	}
+	
+	public Term[] getQuantTerms(String qstring) {
+		if (qstring.length() < 2)
+			throw new IllegalArgumentException("Invalid terms on quantifier");
+		ArrayList<String> als = new ArrayList<String>();
+		qstring = qstring.substring(1);
+		StringTokenizer st = new StringTokenizer(qstring, ",");
+		while (st.hasMoreElements())
+			als.add(st.nextToken());
+		if (als.isEmpty())
+			return new Term[0];
+		else
+			return convertToStringArray(als);
 	}
 }

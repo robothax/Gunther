@@ -35,7 +35,7 @@ public class Sequent {
 		
 		for (int i = 0; i < leftAtom.size(); i++) {
 			for (int j = 0; j < rightAtom.size(); j++) {
-				if (leftAtom.get(i).equals(rightAtom.get(j))) {
+				if (leftAtom.get(i).toString().equals(rightAtom.get(j).toString())) {
 					return true;
 				}
 			}

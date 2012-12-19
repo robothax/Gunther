@@ -11,7 +11,7 @@ public class FirstOrderFormula extends Formula {
 	
 	private Formula arg;
 	private Operator quantifier;
-	private String[] terms;
+	private Term[] terms;
 	
 	/**
 	 * Constructor for first-order formula
@@ -19,7 +19,7 @@ public class FirstOrderFormula extends Formula {
 	 * @param q Quantifier on the terms
 	 * @param t List of terms
 	 */
-	public FirstOrderFormula(Formula f, Operator q, String... t) {
+	public FirstOrderFormula(Formula f, Operator q, Term... t) {
 		if (q != Operator.UNIVERSAL && q != Operator.EXISTENTIAL)
 			throw new IllegalArgumentException("Invalid quantifier");
 		
@@ -31,14 +31,14 @@ public class FirstOrderFormula extends Formula {
 	
 	public Operator getQuantifier() {	return quantifier;	}
 	public Formula getArgument() 	{	return arg;		}
-	public String[] getTerms()	{	return terms;		}
+	public Term[] getTerms()	{	return terms;		}
 	
 	public String toString() {
 		String formString = null;
 		
 		formString += quantifier.toString();
 		for (int i = 0; i < terms.length; i++) {
-			formString += terms[i];
+			formString += terms[i].toString();
 			if (i+1 < terms.length)
 				formString += ", ";
 		}

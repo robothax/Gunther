@@ -6,7 +6,6 @@ import data_structures.Sequent;
  * @author Jeffrey Kabot
  *
  */
-//@THIS WHOLE CLASS IS A CANDIDATE FOR BEATIFICATION
 public class ProofNode {
 	//each node is a sequent's toString
 	//can't use the sequents themselves because the sequents change during computation (i.e. are mutable and the record won't hold)
@@ -18,8 +17,13 @@ public class ProofNode {
 	private ProofNode lchild;
 	private ProofNode rchild;
 	
+	private static int nodeIndex;
+	private int number;
+	
 	ProofNode(Sequent s) {
 		state = s.toString();
+		nodeIndex = 1;
+		number = nodeIndex++;
 		parent = null;
 		lchild = null;
 		rchild = null;
@@ -29,6 +33,8 @@ public class ProofNode {
 		state = s.toString();
 		parent = p;
 		p.setChild(this);
+		number = nodeIndex++;
+		
 	}
 	
 	public String getState() {	return state;	}
@@ -58,10 +64,12 @@ public class ProofNode {
 		}
 	}
 	
-	/*public synchronized void setLChild(ProofNode l) {
-		lchild = l;
+	public String toString() {
+		String s = "";
+		s += number + ": " + state;
+		if (parent != null)
+			s+= "\t\t + (Parent = " + parent.number + ")";
+		
+		return s;
 	}
-	public synchronized void setRChild(ProofNode r) {
-		rchild = r;
-	}*/
 }

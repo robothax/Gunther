@@ -9,7 +9,7 @@ package data_structures;
 public class AtomicFormula extends Formula {
 	
 	private String descriptor;
-	private String[] terms;
+	private Term[] terms;
 	
 	private boolean firstOrder;
 	
@@ -18,7 +18,7 @@ public class AtomicFormula extends Formula {
 	 * @param lit Capital letter representative of the formula.
 	 * @param t List of terms, can be empty.  If non-empty then the formula is first-order.
 	 */
-	public AtomicFormula(String lit, String... t) {
+	public AtomicFormula(String lit, Term... t) {
 		if (t.length == 0) {
 			firstOrder = false;
 		}
@@ -31,7 +31,7 @@ public class AtomicFormula extends Formula {
 	}
 	
 	public boolean isFirstOrder()	{	return firstOrder; 	}
-	public String[] getTerms() {	return terms;	}
+	public Term[] getTerms() {	return terms;	}
 	
 	public String toString() {
 		String formString = "";

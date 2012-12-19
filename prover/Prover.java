@@ -60,7 +60,6 @@ public class Prover implements Runnable {
 	private Prover(Sequent branch, ProofNode initNode) {
 		localBranch = branch;
 		currentNode = initNode;
-
 		Thread t = new Thread(this, "Sequent " + branch);
 		tm.addThread(new Boolean(false));
 		doneYetIndex=tm.getDoneYet().size()-1;
@@ -145,8 +144,8 @@ public class Prover implements Runnable {
 					switch (o) {
 					case NEGATION:
 						rightNegation(branch, cf);
-						prove(branch, new ProofNode(branch, pNode));
-						break;
+						return prove(branch, new ProofNode(branch, pNode));
+						//break;
 					case CONJUNCTION:
 						rightConjunction(branch, cf, pNode);
 						//thread branches into two new threads, original thread returns
@@ -154,12 +153,12 @@ public class Prover implements Runnable {
 						//break;
 					case DISJUNCTION:
 						rightDisjunction(branch, cf);
-						prove(branch, new ProofNode(branch, pNode));
-						break;
+						return prove(branch, new ProofNode(branch, pNode));
+						//break;
 					case IMPLICATION:
 						rightImplication(branch, cf);
-						prove(branch, new ProofNode(branch, pNode));
-						break;
+						return prove(branch, new ProofNode(branch, pNode));
+						//break;
 					case EQUIVALENCE:
 						rightEquivalence(branch, cf, pNode);
 						//thread branches into two new threads, original thread returns
@@ -174,11 +173,11 @@ public class Prover implements Runnable {
 					
 					switch (o) {
 					case EXISTENTIAL:
-						//TODO
-						break;
+						rightExistential(branch, fof);
+						return prove(branch, new ProofNode(branch, pNode));
 					case UNIVERSAL:
-						//TODO
-						break;
+						rightUniversal(branch, fof);
+						return prove(branch, new ProofNode(branch, pNode));
 					}
 				}
 			}
@@ -194,12 +193,10 @@ public class Prover implements Runnable {
 					switch (o) {
 					case NEGATION:
 						leftNegation(branch, cf);
-						prove(branch, new ProofNode(branch, pNode));
-						break;
+						return prove(branch, new ProofNode(branch, pNode));
 					case CONJUNCTION:
 						leftConjunction(branch, cf);
-						prove(branch, new ProofNode(branch, pNode));
-						break;
+						return prove(branch, new ProofNode(branch, pNode));
 					case DISJUNCTION:
 						leftDisjunction(branch, cf, pNode);
 						//thread branches into two new threads, original thread returns
@@ -217,18 +214,18 @@ public class Prover implements Runnable {
 						//break;
 					}
 				}
-				//otherwise f must be a first order formula (as we cannot retrieve atoms from the list normally
+				//otherwise f must be a first order formula (as we cannot retrieve atoms from the list normally)
 				else {
 					FirstOrderFormula fof = (FirstOrderFormula)f;
 					o = fof.getQuantifier().getType();
 					
 					switch(o) {
 					case EXISTENTIAL:
-						//TODO
-						break;
+						leftExistential(branch, fof);
+						return prove(branch, new ProofNode(branch, pNode));
 					case UNIVERSAL:
-						//TODO
-						break;
+						leftUniversal(branch, fof);
+						return prove(branch, new ProofNode(branch, pNode));
 					}
 				}
 			}
@@ -372,5 +369,33 @@ public class Prover implements Runnable {
 
 		new Prover(branch1, new ProofNode(branch1, pNode));
 		new Prover(branch2, new ProofNode(branch2, pNode));
+	}
+	
+	private void leftUniversal(Sequent branch, FirstOrderFormula fof) {
+		//instantiate terms of fof
+		
+		branch.getHypotheses().addFirst(fof.getArgument());
+		//implicit contraction
+		branch.getHypotheses().addLast(fof);
+	}
+	
+	private void rightUniversal(Sequent branch, FirstOrderFormula fof) {
+		//instantiate unique term of fof
+		
+		branch.getConclusions().addFirst(fof.getArgument());
+	}
+	
+	private void leftExistential(Sequent branch, FirstOrderFormula fof) {
+		//instantiate unique term of fof
+		
+		branch.getHypotheses().addFirst(fof.getArgument());
+	}
+	
+	private void rightExistential(Sequent branch, FirstOrderFormula fof) {
+		//instantiate terms of fof
+		
+		branch.getConclusions().addFirst(fof.getArgument());
+		//implicit contraction
+		branch.getConclusions().addLast(fof);
 	}
 }

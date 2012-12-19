@@ -56,6 +56,6 @@ public class ProofTree {
 		if (start.getRChild() != null)
 			printProof(start.getRChild());
 		
-		System.out.println(start.getState());
+		System.out.println(start.toString());
 	}
 }

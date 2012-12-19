@@ -79,7 +79,7 @@ public class CompoundFormula extends Formula {
 	}
 
 	public CompoundFormula clone() {
-		Formula[] cloneArgs = new CompoundFormula[arguments.length];
+		Formula[] cloneArgs = new Formula[arguments.length];
 		for (int i = 0; i < arguments.length; i++) {
 			cloneArgs[i] = arguments[i].clone();
 		}

@@ -9,6 +9,12 @@ import data_structures.AtomicFormula;
 import data_structures.Operator;
 import data_structures.Term;
 
+/**
+ * 
+ * @author Aaron Meltzer
+ *
+ */
+
 public class Atomizer {
 	
 	private HashMap<Double, AtomicFormula>Atomics;

@@ -11,6 +11,12 @@ import data_structures.Operator;
 import data_structures.Sequent;
 import data_structures.Term;
 
+/**
+ * 
+ * @author Aaron Meltzer
+ *
+ */
+
 public class Parser {
 	
 	private static Parser parse;

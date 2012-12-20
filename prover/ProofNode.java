@@ -82,7 +82,7 @@ public class ProofNode {
 		String s = "";
 		s += number + ": " + state;
 		if (parent != null)
-			s+= "\t\t(Parent = " + parent.number + ")\t[" + note + "]";
+			s+= "\t(Parent = " + parent.number + ")\t[" + note + "]";
 		
 		return s;
 	}

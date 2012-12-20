@@ -1,7 +1,11 @@
 package parser;
 
 import java.util.Stack;
-
+/**
+ * 
+ * @author Aaron Meltzer, Jeffrey Kabot
+ *
+ */
 public class Postfix {
 	public Postfix(String input){
 	}

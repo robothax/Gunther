@@ -5,7 +5,11 @@ import data_structures.Term;
 import parser.Parser;
 import prover.Prover;
 
-
+/**
+ * 
+ * @author Jeffrey Kabot
+ *
+ */
 public class TheoremProver {
 
 	public static void main(String[] args) {
